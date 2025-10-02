@@ -5,8 +5,6 @@
 #ifndef TRPSCHEMA_HPP
 #define TRPSCHEMA_HPP
 
-class TrpValidatorContext;
-
 class TrpSchema
 {
     public:
