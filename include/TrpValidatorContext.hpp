@@ -43,6 +43,7 @@ class TrpValidatorContext {
         void popPath();
 
         void pushError(ValidationError _err);
+        std::string getCurrentPath( void );
 };
 
 #endif

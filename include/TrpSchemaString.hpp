@@ -5,7 +5,7 @@
 class TrpSchemaString : public TrpSchema
 {
     private:
-        bool has_min, has_min;
+        bool has_min, has_max;
         size_t min_len, max_len;
 
     public:

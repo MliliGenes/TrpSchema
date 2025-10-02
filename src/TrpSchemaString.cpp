@@ -1,10 +1,7 @@
 #include "../include/TrpSchemaString.hpp"
 
 
-TrpSchemaString::TrpSchemaString( void ) {
-
-}
-
+TrpSchemaString::TrpSchemaString( void ) : has_max(false), has_min(false) {}
 
 TrpSchemaString& TrpSchemaString::min( size_t _min_len ) {
     if (!has_min) has_min = false;
@@ -16,4 +13,45 @@ TrpSchemaString& TrpSchemaString::max( size_t _max_len ) {
     if (!has_max) has_max = false;
     max_len = _max_len;
     return *this;
+}
+
+bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
+    if ( value->getType() != TRP_STRING ) {
+        ValidationError err;
+
+        err.path = ctx.getCurrentPath();
+        err.msg = "Expected string";
+        err.expected = SCHEMA_STRING;
+        err.actual = value->getType();
+
+        ctx.pushError( err );
+        return false;
+    }
+
+    TrpJsonString* str = static_cast<TrpJsonString*>(value);
+    if (has_max && str->getValue().size() > max_len) {
+        ValidationError err;
+
+        err.path = ctx.getCurrentPath();
+        err.msg = "String exceeds maximum length";
+        err.expected = SCHEMA_STRING;
+        err.actual = value->getType();
+
+        ctx.pushError( err );
+        return false;
+    }
+
+    if (has_min && str->getValue().size() < min_len) {
+        ValidationError err;
+
+        err.path = ctx.getCurrentPath();
+        err.msg = "String is shorter than minimum length";
+        err.expected = SCHEMA_STRING;
+        err.actual = value->getType();
+
+        ctx.pushError( err );
+        return false;
+    }
+
+    return true;
 }
