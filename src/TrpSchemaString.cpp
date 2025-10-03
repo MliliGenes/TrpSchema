@@ -22,7 +22,7 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         err.path = ctx.getCurrentPath();
         err.msg = "Expected string";
         err.expected = SCHEMA_STRING;
-        err.actual = value->getType();
+        err.actual = value ? value->getType() : TRP_NULL;
 
         ctx.pushError( err );
         return false;
@@ -32,8 +32,10 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
     if (has_max && str->getValue().size() > max_len) {
         ValidationError err;
 
+        std::stringstream error;
+        error << "String size should be at most " << max_len << "chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
-        err.msg = "String exceeds maximum length";
+        err.msg = error.str();
         err.expected = SCHEMA_STRING;
         err.actual = value->getType();
 
@@ -44,8 +46,10 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
     if (has_min && str->getValue().size() < min_len) {
         ValidationError err;
 
+        std::stringstream error;
+        error << "String size should be at least " << max_len << "chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
-        err.msg = "String is shorter than minimum length";
+        err.msg = error.str();
         err.expected = SCHEMA_STRING;
         err.actual = value->getType();
 

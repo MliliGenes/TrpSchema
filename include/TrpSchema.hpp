@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TrpValidatorContext.hpp"
+#include <sstream>
+#include <string>
 
 #ifndef TRPSCHEMA_HPP
 #define TRPSCHEMA_HPP

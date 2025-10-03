@@ -104,7 +104,23 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( _uniq ) {
-        
+        typedef std::map<TrpJsonType, ITrpJsonValue*> UniqEntry;
+        typedef std::pair<TrpJsonType, ITrpJsonValue*> UniqPair;
+        UniqEntry uniq_vals;
+
+        uniq_vals.insert(UniqPair(arr->at(0)->getType(), (arr->at(0))));
+        for ( int i = 1; i < arr->size(); i++ ) {
+            TrpJsonType t = arr->at(i)->getType();
+            UniqEntry::iterator it = uniq_vals.find(t);
+            if ( it != uniq_vals.end() && ( t != TRP_ARRAY && t != TRP_OBJECT ) ) {
+                if ( t == TRP_STRING ) {
+                    TrpJsonString* str = static_cast<TrpJsonString*>(it->second);
+                    if ( arr->at(i)  )
+                }
+
+            }
+
+        }
     }
 
     return true;
