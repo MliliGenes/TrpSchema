@@ -14,17 +14,19 @@ TrpSchemaArray& TrpSchemaArray::max(size_t max) {
 }
 
 TrpSchemaArray& TrpSchemaArray::items( TrpSchema* _schema ) {
-    if (!_schema) return;
+    if (!_schema) return *this;
     _items = _schema;
+    return *this;
 }
 
 TrpSchemaArray& TrpSchemaArray::tuple( SchemaVec _schema_vec ) {
-    if (_schema_vec.empty()) return;
+    if (_schema_vec.empty()) return *this;
     _tuple = _schema_vec;
+    return *this;
 }
 
 std::string intToString( int nbr ) {
-    std::ostringstream oss;
+    std::stringstream oss;
     oss << nbr;
 
     return oss.str();
