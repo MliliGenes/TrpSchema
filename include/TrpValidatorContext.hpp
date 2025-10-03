@@ -31,13 +31,12 @@ typedef std::vector<std::string> TrpValidationPath;
 
 class TrpValidatorContext {
     private:
-        TrpValidationError error;
+        TrpValidationError errors;
         TrpValidationPath paths;
         size_t max_errors;
 
     public:
-        TrpValidatorContext(size_t max_err = 100);
-        ~TrpValidatorContext(void);
+        TrpValidatorContext( size_t _max_errors );
 
         void pushPath(const std::string _path);
         void popPath();
