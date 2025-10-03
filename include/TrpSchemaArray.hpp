@@ -11,7 +11,7 @@ class TrpSchemaArray : public TrpSchema {
         TrpSchema* _items;
         SchemaVec _tuple;
 
-        bool unique;
+        bool _uniq;
         bool has_max, has_min;
         size_t max_items, min_items;
 
@@ -23,6 +23,7 @@ class TrpSchemaArray : public TrpSchema {
 
         TrpSchemaArray& min(size_t min);
         TrpSchemaArray& max(size_t max);
+        TrpSchemaArray& uniq(bool uniq);
 
         bool validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const;
         SchemaType getType() const { return SCHEMA_ARRAY; }

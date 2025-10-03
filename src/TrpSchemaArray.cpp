@@ -21,6 +21,11 @@ TrpSchemaArray& TrpSchemaArray::items( TrpSchema* _schema ) {
     return *this;
 }
 
+TrpSchemaArray& TrpSchemaArray::uniq(bool uniq) {
+    _uniq = uniq;
+    return *this;
+}
+
 TrpSchemaArray& TrpSchemaArray::tuple( SchemaVec _schema_vec ) {
     if (_schema_vec.empty()) return *this;
     _tuple = _schema_vec;
@@ -41,7 +46,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         err.path = ctx.getCurrentPath();
         err.msg = "Expected array";
         err.expected = SCHEMA_ARRAY;
-        err.actual = value->getType();
+        err.actual = value ? value->getType() : TRP_NULL;
 
         ctx.pushError( err );
         return false;
@@ -49,12 +54,30 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
 
     TrpJsonArray* arr = static_cast<TrpJsonArray*>(value);
     if ( has_max && arr->size() > max_items ) {
-        // error
+        ValidationError err;
+
+        err.path = ctx.getCurrentPath();
+        std::stringstream ss;
+        ss << "Array must contain at least " << min_items << " items, but got " << arr->size();
+        err.msg = ss.str();
+        err.expected = SCHEMA_ARRAY;
+        err.actual = TRP_ARRAY;
+
+        ctx.pushError(err);
         return false;
     }
 
     if ( has_min && arr->size() < min_items ) {
-        // error
+        ValidationError err;
+
+        err.path = ctx.getCurrentPath();
+        std::stringstream ss;
+        ss << "Array must contain at most " << max_items << " items, but got " << arr->size();
+        err.msg = ss.str();
+        err.expected = SCHEMA_ARRAY;
+        err.actual = TRP_ARRAY;
+
+        ctx.pushError(err);
         return false;
     }
 
@@ -62,7 +85,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         for ( int i = 0; i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_items->validate( arr->at(i), ctx ) ) {
-                // error
+                ctx.popPath();
                 return false;
             }
             ctx.popPath();
@@ -73,11 +96,15 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         for ( int i = 0; i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
-                // error
+                ctx.popPath();
                 return false;
             }
             ctx.popPath();
         }
+    }
+
+    if ( _uniq ) {
+        
     }
 
     return true;
