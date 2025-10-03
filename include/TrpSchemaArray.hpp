@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TrpSchema.hpp"
+#include <sstream>
+#include <string>
 
 typedef std::vector<TrpSchema*> SchemaVec;
 
