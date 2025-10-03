@@ -1,7 +1,7 @@
 #include "../include/TrpSchemaArray.hpp"
 
 
-TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _items(NULL) {}
+TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _item(NULL) {}
 
 TrpSchemaArray& TrpSchemaArray::min(size_t min) {
     if (!has_min) has_min = true;
@@ -15,9 +15,9 @@ TrpSchemaArray& TrpSchemaArray::max(size_t max) {
     return *this;
 }
 
-TrpSchemaArray& TrpSchemaArray::items( TrpSchema* _schema ) {
+TrpSchemaArray& TrpSchemaArray::item( TrpSchema* _schema ) {
     if (!_schema) return *this;
-    _items = _schema;
+    _item = _schema;
     return *this;
 }
 
@@ -81,10 +81,10 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         return false;
     }
 
-    if ( _items ) {
+    if ( _item ) {
         for ( int i = 0; i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
-            if ( !_items->validate( arr->at(i), ctx ) ) {
+            if ( !_item->validate( arr->at(i), ctx ) ) {
                 ctx.popPath();
                 return false;
             }
@@ -104,22 +104,52 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( _uniq ) {
-        typedef std::map<TrpJsonType, ITrpJsonValue*> UniqEntry;
-        typedef std::pair<TrpJsonType, ITrpJsonValue*> UniqPair;
-        UniqEntry uniq_vals;
+        std::set<double> nbr_bucket;
+        std::set<std::string> str_bucket;
+        std::set<bool> bool_bucket;
+        bool null_found = false;
 
-        uniq_vals.insert(UniqPair(arr->at(0)->getType(), (arr->at(0))));
-        for ( int i = 1; i < arr->size(); i++ ) {
-            TrpJsonType t = arr->at(i)->getType();
-            UniqEntry::iterator it = uniq_vals.find(t);
-            if ( it != uniq_vals.end() && ( t != TRP_ARRAY && t != TRP_OBJECT ) ) {
-                if ( t == TRP_STRING ) {
-                    TrpJsonString* str = static_cast<TrpJsonString*>(it->second);
-                    if ( arr->at(i)  )
-                }
+        for ( int i = 0; i < arr->size(); i++ ) {
+            ITrpJsonValue* element = arr->at(i);
+            bool is_duplicate = false;
 
+            switch (element->getType()) {
+                case TRP_STRING:
+                    if (!str_bucket.insert(static_cast<TrpJsonString*>(element)->getValue()).second) {
+                        is_duplicate = true;
+                    }
+                    break;
+                case TRP_NUMBER:
+                    if (!nbr_bucket.insert(static_cast<TrpJsonNumber*>(element)->getValue()).second) {
+                        is_duplicate = true;
+                    }
+                    break;
+                case TRP_BOOL:
+                    if (!bool_bucket.insert(static_cast<TrpJsonBool*>(element)->getValue()).second) {
+                        is_duplicate = true;
+                    }
+                    break;
+                case TRP_NULL:
+                    if (null_found) is_duplicate = true;
+                    else null_found = true;
+                    break;
+                default:
+                    break;
             }
 
+            if (is_duplicate) {
+                ValidationError err;
+
+                ctx.pushPath("[" + intToString(i) + "]");
+                err.path = ctx.getCurrentPath();
+                ctx.popPath();
+                err.msg = "Duplicate item found in array. Items must be unique.";
+                err.expected = SCHEMA_ARRAY;
+                err.actual = TRP_ARRAY;
+        
+                ctx.pushError(err);
+                return false;
+            }
         }
     }
 

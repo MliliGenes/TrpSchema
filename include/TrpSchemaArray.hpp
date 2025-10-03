@@ -6,7 +6,7 @@ typedef std::vector<TrpSchema*> SchemaVec;
 
 class TrpSchemaArray : public TrpSchema {
     private:
-        TrpSchema* _items;
+        TrpSchema* _item;
         SchemaVec _tuple;
 
         bool _uniq;
@@ -16,7 +16,7 @@ class TrpSchemaArray : public TrpSchema {
     public:
         TrpSchemaArray();
 
-        TrpSchemaArray& items( TrpSchema* _schema );
+        TrpSchemaArray& item( TrpSchema* _schema );
         TrpSchemaArray& tuple( SchemaVec _schema );
 
         TrpSchemaArray& min(size_t min);

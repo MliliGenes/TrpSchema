@@ -3,6 +3,7 @@
 #include "TrpValidatorContext.hpp"
 #include <sstream>
 #include <string>
+#include <set>
 
 #ifndef TRPSCHEMA_HPP
 #define TRPSCHEMA_HPP
