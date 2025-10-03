@@ -6,11 +6,13 @@ TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _items(
 TrpSchemaArray& TrpSchemaArray::min(size_t min) {
     if (!has_min) has_min = true;
     min_items = min;
+    return *this;
 }
 
 TrpSchemaArray& TrpSchemaArray::max(size_t max) {
     if (!has_max) has_max = true;
     max_items = max;
+    return *this;
 }
 
 TrpSchemaArray& TrpSchemaArray::items( TrpSchema* _schema ) {
