@@ -16,7 +16,7 @@ TrpSchemaString& TrpSchemaString::max( size_t _max_len ) {
 }
 
 bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
-    if ( value->getType() != TRP_STRING ) {
+    if ( !value || value->getType() != TRP_STRING ) {
         ValidationError err;
 
         err.path = ctx.getCurrentPath();

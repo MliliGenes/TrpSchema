@@ -10,7 +10,7 @@ TrpSchema is a comprehensive JSON schema validation library built on top of the 
 - **🎯 Zod-like API**: Intuitive, fluent interface for schema construction
 - **📍 Precise Error Reporting**: Path-based error tracking with detailed validation messages
 - **⚡ Configurable Strategies**: Fail-fast or comprehensive validation modes
-- **🛡️ Memory Safe**: RAII-based memory management with AutoPointer templates
+- **🛡️ Memory Safe**: Stack-allocated schemas with automatic RAII cleanup
 - **🔧 C++98 Compatible**: Maximum portability across legacy and modern systems
 
 ## 📦 Quick Start
@@ -19,24 +19,22 @@ TrpSchema is a comprehensive JSON schema validation library built on top of the 
 #include "TrpJson.hpp"
 #include "TrpSchema.hpp"
 
-// Define a user profile schema
-AutoPointer<ISchema> userSchema(
-    SchemaBuilder::object()
-        ->property("id", SchemaBuilder::number()->min(1))
-        ->property("name", SchemaBuilder::string()->minLength(1)->maxLength(50))
-        ->property("email", SchemaBuilder::string()->minLength(5))
-        ->property("age", SchemaBuilder::optional(
-            SchemaBuilder::number()->min(13)->max(120)))
-        ->required("id")
-        ->required("name")
-        ->required("email")
-);
+// Define a user profile schema (stack allocated, no new/delete needed)
+TrpSchemaObject userSchema = SchemaBuilder::object()
+    .property("id", SchemaBuilder::number().min(1))
+    .property("name", SchemaBuilder::string().minLength(1).maxLength(50))
+    .property("email", SchemaBuilder::string().minLength(5))
+    .property("age", SchemaBuilder::optional(
+        SchemaBuilder::number().min(13).max(120)))
+    .required("id")
+    .required("name")
+    .required("email");
 
 // Validate JSON data
 TrpJsonParser parser("user.json");
 if (parser.parse()) {
     ValidationContext ctx;
-    bool isValid = userSchema->validate(parser.getAST(), ctx);
+    bool isValid = userSchema.validate(parser.getAST(), ctx);
     
     if (!isValid) {
         const std::vector<ValidationError>& errors = ctx.getErrors();
@@ -51,37 +49,37 @@ if (parser.parse()) {
 
 ```cpp
 SchemaBuilder::string()
-    ->minLength(1)
-    ->maxLength(100)
+    .minLength(1)
+    .maxLength(100)
 ```
 
 ### Number Validation
 
 ```cpp
 SchemaBuilder::number()
-    ->min(0)
-    ->max(1000)
-    ->positive()
+    .min(0)
+    .max(1000)
+    .positive()
 ```
 
 ### Object Validation
 
 ```cpp
 SchemaBuilder::object()
-    ->property("name", SchemaBuilder::string())
-    ->property("count", SchemaBuilder::number()->min(0))
-    ->required("name")
-    ->additionalProperties(false)
+    .property("name", SchemaBuilder::string())
+    .property("count", SchemaBuilder::number().min(0))
+    .required("name")
+    .additionalProperties(false)
 ```
 
 ### Array Validation
 
 ```cpp
 SchemaBuilder::array()
-    ->items(SchemaBuilder::string())
-    ->minItems(1)
-    ->maxItems(10)
-    ->uniqueItems(true)
+    .items(SchemaBuilder::string())
+    .minItems(1)
+    .maxItems(10)
+    .uniqueItems(true)
 ```
 
 ## 🎯 Advanced Features
@@ -103,13 +101,13 @@ AutoPointer<ITrpJsonValue> ast(parser.release());
 
 // Multiple validations on same AST
 ValidationContext ctx1, ctx2;
-schema1->validate(ast.get(), ctx1);
-schema2->validate(ast.get(), ctx2);
+schema1.validate(ast.get(), ctx1);
+schema2.validate(ast.get(), ctx2);
 ```
 
 ## 📊 Performance
 
-- **Memory Efficient**: RAII design with automatic cleanup
+- **Memory Efficient**: Stack allocation with automatic cleanup, no heap allocation needed
 - **Fast Validation**: Type caching and early termination optimizations
 - **Scalable**: Configurable error collection limits
 - **Zero-Copy**: Direct AST validation without data transformation
@@ -129,23 +127,21 @@ schema2->validate(ast.get(), ctx2);
 #include "TrpSchema.hpp"
 
 int main() {
-    // Create user profile schema
-    AutoPointer<ISchema> userSchema(
-        SchemaBuilder::object()
-            ->property("id", SchemaBuilder::number()->min(1))
-            ->property("name", SchemaBuilder::string()->minLength(1)->maxLength(50))
-            ->property("email", SchemaBuilder::string()->minLength(5))
-            ->property("age", SchemaBuilder::optional(
-                SchemaBuilder::number()->min(13)->max(120)))
-            ->property("preferences", 
-                SchemaBuilder::object()
-                    ->property("theme", SchemaBuilder::string())
-                    ->property("notifications", SchemaBuilder::boolean())
-                    ->additionalProperties(false))
-            ->required("id")
-            ->required("name")
-            ->required("email")
-    );
+    // Create user profile schema (stack allocated)
+    TrpSchemaObject userSchema = SchemaBuilder::object()
+        .property("id", SchemaBuilder::number().min(1))
+        .property("name", SchemaBuilder::string().minLength(1).maxLength(50))
+        .property("email", SchemaBuilder::string().minLength(5))
+        .property("age", SchemaBuilder::optional(
+            SchemaBuilder::number().min(13).max(120)))
+        .property("preferences", 
+            SchemaBuilder::object()
+                .property("theme", SchemaBuilder::string())
+                .property("notifications", SchemaBuilder::boolean())
+                .additionalProperties(false))
+        .required("id")
+        .required("name")
+        .required("email");
     
     // Parse and validate JSON
     TrpJsonParser parser("user.json");
@@ -153,7 +149,7 @@ int main() {
         ValidationContext ctx;
         AutoPointer<ITrpJsonValue> ast(parser.release());
         
-        if (userSchema->validate(ast.get(), ctx)) {
+        if (userSchema.validate(ast.get(), ctx)) {
             std::cout << "✅ Validation passed!" << std::endl;
         } else {
             std::cout << "❌ Validation failed:" << std::endl;
@@ -172,24 +168,22 @@ int main() {
 ### Configuration File Validation
 
 ```cpp
-// Server configuration validation
-AutoPointer<ISchema> configSchema(
-    SchemaBuilder::object()
-        ->property("server",
-            SchemaBuilder::object()
-                ->property("host", SchemaBuilder::string())
-                ->property("port", SchemaBuilder::number()->min(1)->max(65535))
-                ->property("ssl", SchemaBuilder::boolean())
-                ->required("host")
-                ->required("port"))
-        ->property("database",
-            SchemaBuilder::object()
-                ->property("url", SchemaBuilder::string())
-                ->property("pool_size", SchemaBuilder::number()->min(1)->max(100))
-                ->required("url"))
-        ->required("server")
-        ->required("database")
-);
+// Server configuration validation (stack allocated)
+TrpSchemaObject configSchema = SchemaBuilder::object()
+    .property("server",
+        SchemaBuilder::object()
+            .property("host", SchemaBuilder::string())
+            .property("port", SchemaBuilder::number().min(1).max(65535))
+            .property("ssl", SchemaBuilder::boolean())
+            .required("host")
+            .required("port"))
+    .property("database",
+        SchemaBuilder::object()
+            .property("url", SchemaBuilder::string())
+            .property("pool_size", SchemaBuilder::number().min(1).max(100))
+            .required("url"))
+    .required("server")
+    .required("database");
 
 // Use the schema
 TrpJsonParser parser("config.json");
@@ -197,7 +191,7 @@ if (parser.parse()) {
     ValidationContext ctx;
     AutoPointer<ITrpJsonValue> ast(parser.release());
     
-    if (configSchema->validate(ast.get(), ctx)) {
+    if (configSchema.validate(ast.get(), ctx)) {
         std::cout << "✅ Configuration is valid!" << std::endl;
     }
 }
@@ -209,7 +203,7 @@ TrpSchema leverages the TrpJSON parser's AST capabilities for optimal performanc
 
 - **AST Reuse**: Parse once, validate multiple times
 - **Type Safety**: Compile-time schema construction with runtime validation
-- **Memory Efficiency**: RAII-based memory management with AutoPointer
+- **Memory Efficiency**: Stack-allocated schemas with automatic RAII cleanup
 - **Error Collection**: Detailed path-based error reporting
 - **Fail-Fast Options**: Configurable validation strategies
 

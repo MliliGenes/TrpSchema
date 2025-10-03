@@ -12,7 +12,7 @@ TrpSchema is a comprehensive JSON schema validation system that leverages the Tr
 
 - **AST Reuse**: Parse once with TrpJSON, validate multiple times for optimal performance
 - **Type Safety**: Compile-time schema type checking with runtime validation
-- **Memory Efficiency**: RAII-based memory management using AutoPointer templates
+- **Memory Efficiency**: Stack-allocated schemas with automatic RAII cleanup
 - **Fail-Fast Options**: Configurable validation strategies for different performance needs
 - **Detailed Errors**: Path-based error reporting with precise location information
 
@@ -111,14 +111,14 @@ public:
 
 ```cpp
 // Product name validation
-StringSchema* nameSchema = new StringSchema();
-nameSchema->minLength(1)
-          ->maxLength(100);
+StringSchema nameSchema = StringSchema()
+    .minLength(1)
+    .maxLength(100);
 
 // Description validation
-StringSchema* descriptionSchema = new StringSchema();
-descriptionSchema->minLength(10)
-                 ->maxLength(500);
+StringSchema descriptionSchema = StringSchema()
+    .minLength(10)
+    .maxLength(500);
 ```
 
 ## 4. Number Schema
@@ -152,12 +152,12 @@ public:
 
 ```cpp
 // Age validation (0-120, inclusive)
-NumberSchema* ageSchema = new NumberSchema();
-ageSchema->min(0)->max(120);
+NumberSchema ageSchema = NumberSchema()
+    .min(0).max(120);
 
 // Port number validation (1-65535)
-NumberSchema* portSchema = new NumberSchema();
-portSchema->min(1)->max(65535);
+NumberSchema portSchema = NumberSchema()
+    .min(1).max(65535);
 ```
 
 ## 5. Object Schema
@@ -331,13 +331,13 @@ The Schema Builder provides a fluent, intuitive API for constructing complex val
 class SchemaBuilder {
 public:
     // Primary type factories
-    static StringSchema* string();
-    static NumberSchema* number(); 
-    static BooleanSchema* boolean();
-    static ObjectSchema* object();
-    static ArraySchema* array();
-    static NullSchema* null();
-    static AnySchema* any();
+    static StringSchema string();
+    static NumberSchema number(); 
+    static BooleanSchema boolean();
+    static ObjectSchema object();
+    static ArraySchema array();
+    static NullSchema null();
+    static AnySchema any();
     
     // Utility schema constructors
     static ISchema* optional(ISchema* schema);
@@ -349,40 +349,41 @@ public:
 ### Implementation
 
 ```cpp
-StringSchema* SchemaBuilder::string() {
-    return new StringSchema();
+StringSchema SchemaBuilder::string() {
+    return StringSchema();
 }
 
-NumberSchema* SchemaBuilder::number() {
-    return new NumberSchema();
+NumberSchema SchemaBuilder::number() {
+    return NumberSchema();
 }
 
-ObjectSchema* SchemaBuilder::object() {
-    return new ObjectSchema();
+ObjectSchema SchemaBuilder::object() {
+    return ObjectSchema();
 }
 
-// Optional wrapper schema
+// Optional wrapper schema (stack allocated)
+template<typename T>
 class OptionalSchema : public ISchema {
 private:
-    ISchema* inner_schema;
+    T inner_schema;
     
 public:
-    OptionalSchema(ISchema* schema) : inner_schema(schema) {}
-    ~OptionalSchema() { delete inner_schema; }
+    OptionalSchema(const T& schema) : inner_schema(schema) {}
     
     bool validate(ITrpJsonValue* value, ValidationContext& ctx) const {
         // Allow null/undefined values
         if (value->getType() == TRP_NULL) {
             return true;
         }
-        return inner_schema->validate(value, ctx);
+        return inner_schema.validate(value, ctx);
     }
     
-    SchemaType getType() const { return inner_schema->getType(); }
+    SchemaType getType() const { return inner_schema.getType(); }
 };
 
-ISchema* SchemaBuilder::optional(ISchema* schema) {
-    return new OptionalSchema(schema);
+template<typename T>
+OptionalSchema<T> SchemaBuilder::optional(const T& schema) {
+    return OptionalSchema<T>(schema);
 }
 ```
 
@@ -391,63 +392,60 @@ ISchema* SchemaBuilder::optional(ISchema* schema) {
 ### User Profile Schema
 
 ```cpp
-// User profile validation with basic constraints
-AutoPointer<ISchema> profileSchema(
-    SchemaBuilder::object()
-        ->property("id", SchemaBuilder::number()->min(1))
-        ->property("name", 
-            SchemaBuilder::string()
-                ->minLength(1)
-                ->maxLength(50))
-        ->property("contact",
-            SchemaBuilder::string()
-                ->minLength(5)
-                ->maxLength(100))
-        ->property("age", 
-            SchemaBuilder::optional(
-                SchemaBuilder::number()->min(13)->max(120)))
-        ->property("preferences",
-            SchemaBuilder::object()
-                ->property("theme", 
-                    SchemaBuilder::string())
-                ->property("notifications", 
-                    SchemaBuilder::boolean())
-                ->additionalProperties(false))
-        ->property("tags",
-            SchemaBuilder::array()
-                ->items(SchemaBuilder::string())
-                ->maxItems(10)
-                ->uniqueItems(true))
-        ->required("id")
-        ->required("name")
-        ->required("contact")
-        ->additionalProperties(false)
-);
+// User profile validation with basic constraints (stack allocated)
+ObjectSchema profileSchema = SchemaBuilder::object()
+    .property("id", SchemaBuilder::number().min(1))
+    .property("name", 
+        SchemaBuilder::string()
+            .minLength(1)
+            .maxLength(50))
+    .property("contact",
+        SchemaBuilder::string()
+            .minLength(5)
+            .maxLength(100))
+    .property("age", 
+        SchemaBuilder::optional(
+            SchemaBuilder::number().min(13).max(120)))
+    .property("preferences",
+        SchemaBuilder::object()
+            .property("theme", 
+                SchemaBuilder::string())
+            .property("notifications", 
+                SchemaBuilder::boolean())
+            .additionalProperties(false))
+    .property("tags",
+        SchemaBuilder::array()
+            .items(SchemaBuilder::string())
+            .maxItems(10)
+            .uniqueItems(true))
+    .required("id")
+    .required("name")
+    .required("contact")
+    .additionalProperties(false);
 ```
 
 ### Configuration Schema
 
 ```cpp
-// Server configuration validation
-AutoPointer<ISchema> configSchema(
-    SchemaBuilder::object()
-        ->property("server",
-            SchemaBuilder::object()
-                ->property("host", SchemaBuilder::string())
-                ->property("port", SchemaBuilder::number()->min(1)->max(65535))
-                ->property("ssl", SchemaBuilder::boolean())
-                ->required("host")
-                ->required("port"))
-        ->property("database",
-            SchemaBuilder::object()
-                ->property("url", SchemaBuilder::string())
-                ->property("pool_size", SchemaBuilder::number()->min(1)->max(100))
-                ->property("timeout", SchemaBuilder::number()->min(1000))
-                ->required("url"))
-        ->property("routes",
-            SchemaBuilder::array()
-                ->items(SchemaBuilder::object()
-                    ->property("path", SchemaBuilder::string())
+// Server configuration validation (stack allocated)
+ObjectSchema configSchema = SchemaBuilder::object()
+    .property("server",
+        SchemaBuilder::object()
+            .property("host", SchemaBuilder::string())
+            .property("port", SchemaBuilder::number().min(1).max(65535))
+            .property("ssl", SchemaBuilder::boolean())
+            .required("host")
+            .required("port"))
+    .property("database",
+        SchemaBuilder::object()
+            .property("url", SchemaBuilder::string())
+            .property("pool_size", SchemaBuilder::number().min(1).max(100))
+            .property("timeout", SchemaBuilder::number().min(1000))
+            .required("url"))
+    .property("routes",
+        SchemaBuilder::array()
+            .items(SchemaBuilder::object()
+                .property("path", SchemaBuilder::string())
                     ->property("methods", SchemaBuilder::array()
                         ->items(SchemaBuilder::string()))
                     ->property("auth", SchemaBuilder::boolean())
@@ -460,47 +458,45 @@ AutoPointer<ISchema> configSchema(
 ### E-commerce Product Schema
 
 ```cpp
-// Product data validation
-AutoPointer<ISchema> productSchema(
-    SchemaBuilder::object()
-        ->property("id", SchemaBuilder::string())
-        ->property("name", 
-            SchemaBuilder::string()->minLength(1)->maxLength(200))
-        ->property("price", 
-            SchemaBuilder::number()->min(0, true))  // Exclusive minimum (> 0)
-        ->property("category",
-            SchemaBuilder::string())
-        ->property("tags",
-            SchemaBuilder::array()
-                ->items(SchemaBuilder::string())
-                ->uniqueItems(true))
-        ->property("variants",
-            SchemaBuilder::array()
-                ->items(SchemaBuilder::object()
-                    ->property("sku", SchemaBuilder::string())
-                    ->property("size", SchemaBuilder::string())
-                    ->property("color", SchemaBuilder::string())
-                    ->property("price", SchemaBuilder::number()->min(0, true))
-                    ->required("sku")
-                    ->required("price")))
-        ->property("availability",
-            SchemaBuilder::object()
-                ->property("in_stock", SchemaBuilder::boolean())
-                ->property("quantity", SchemaBuilder::number()->min(0))
-                ->required("in_stock"))
-        ->required("id")
-        ->required("name")
-        ->required("price")
-        ->required("category")
-);
+// Product data validation (stack allocated)
+ObjectSchema productSchema = SchemaBuilder::object()
+    .property("id", SchemaBuilder::string())
+    .property("name", 
+        SchemaBuilder::string().minLength(1).maxLength(200))
+    .property("price", 
+        SchemaBuilder::number().min(0, true))  // Exclusive minimum (> 0)
+    .property("category",
+        SchemaBuilder::string())
+    .property("tags",
+        SchemaBuilder::array()
+            .items(SchemaBuilder::string())
+            .uniqueItems(true))
+    .property("variants",
+        SchemaBuilder::array()
+            .items(SchemaBuilder::object()
+                .property("sku", SchemaBuilder::string())
+                .property("size", SchemaBuilder::string())
+                .property("color", SchemaBuilder::string())
+                .property("price", SchemaBuilder::number().min(0, true))
+                .required("sku")
+                .required("price")))
+    .property("availability",
+        SchemaBuilder::object()
+            .property("in_stock", SchemaBuilder::boolean())
+            .property("quantity", SchemaBuilder::number().min(0))
+            .required("in_stock"))
+    .required("id")
+    .required("name")
+    .required("price")
+    .required("category");
 ```
 
 ## Performance Features
 
 ### Memory Management
 
-- **RAII Design**: All schemas use AutoPointer for automatic cleanup
-- **Reference Counting**: Shared schema instances for memory efficiency
+- **RAII Design**: Stack-allocated schemas with automatic cleanup
+- **Memory Efficiency**: No heap allocation needed, pure stack-based objects
 - **Pool Allocation**: Reusable validation contexts for high-throughput scenarios
 
 ### Validation Strategies
@@ -522,7 +518,7 @@ AutoPointer<ISchema> productSchema(
 #include "TrpSchema.hpp" // Schema validator
 
 // Complete validation workflow
-bool validateJsonFile(const std::string& filename, ISchema* schema) {
+bool validateJsonFile(const std::string& filename, const ISchema& schema) {
     // Parse with TrpJSON
     TrpJsonParser parser(filename);
     if (!parser.parse()) {
@@ -534,7 +530,7 @@ bool validateJsonFile(const std::string& filename, ISchema* schema) {
     ValidationContext ctx(false, 100);  // Collect up to 100 errors
     AutoPointer<ITrpJsonValue> ast(parser.release());
     
-    bool valid = schema->validate(ast.get(), ctx);
+    bool valid = schema.validate(ast.get(), ctx);
     
     if (!valid) {
         const std::vector<ValidationError>& errors = ctx.getErrors();
