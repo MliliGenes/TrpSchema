@@ -18,7 +18,7 @@ int main (int ac, char ** av) {
     TrpSchemaArray arr;
 
     TrpSchemaString str;
-    str.max(2);
+    str.max(1);
     TrpSchemaNumber nbr;
     nbr.min(10);
 
