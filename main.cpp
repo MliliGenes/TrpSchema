@@ -26,12 +26,7 @@ int main (int ac, char ** av) {
 
 
     if (!arr.validate(parser.getAST(), ctx)) {
-        const TrpValidationError& errors = ctx.getErrors();
-
-        for ( int i = 0; i < errors.size(); i++ ) {
-            std::cerr << errors[i].path << ": "
-            << errors[i].msg << std::endl;
-        }
+        ctx.printErrors();
     } else {
         std::cout << "good trip" << std::endl;
     }

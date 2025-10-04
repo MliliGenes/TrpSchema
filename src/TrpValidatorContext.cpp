@@ -30,6 +30,14 @@ const TrpValidationError& TrpValidatorContext::getErrors( void ) const {
     return errors;
 }
 
-// const std::string TrpValidatorContext::getError( void ) const {
-//     return ;
-// }
+bool TrpValidatorContext::printErrors( void ) const {
+    bool got_errors = !errors.empty();
+    for (int i = 0; i < errors.size(); i++) {
+        std::cerr
+            << errors[i].path
+            << ": "
+            << errors[i].msg
+            << std::endl;
+    }
+    return got_errors;
+}

@@ -44,7 +44,7 @@ class TrpValidatorContext {
         std::string getCurrentPath( void );
 
         const TrpValidationError& getErrors( void ) const ;
-        // const std::string& getError( void ) const;
+        bool  printErrors( void ) const;
 };
 
 #endif
