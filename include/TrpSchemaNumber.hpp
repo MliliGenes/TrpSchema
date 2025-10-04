@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TrpSchema.hpp"
-#include "TrpValidatorContext.hpp"
 
 class TrpSchemaNumber : public TrpSchema {
     private:

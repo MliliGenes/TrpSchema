@@ -1,7 +1,7 @@
 #include "../include/TrpSchemaArray.hpp"
 
 
-TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _item(NULL) {}
+TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _item(NULL), _uniq(false) {}
 
 TrpSchemaArray& TrpSchemaArray::min(size_t min) {
     if (!has_min) has_min = true;
@@ -94,9 +94,11 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( !_tuple.empty() ) {
+        std::cerr << "zaba" << std::endl;
         for ( int i = 0; i < _tuple.size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
-            if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
+            if ( _tuple[i]->validate(arr->at(i), ctx) ) {
+                ctx.popPath();
                 if ( !got_error ) got_error = true;
             }
             ctx.popPath();

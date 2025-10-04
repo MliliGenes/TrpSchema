@@ -16,11 +16,18 @@ int main (int ac, char ** av) {
     parser.prettyPrint();
 
     TrpSchemaArray arr;
-    TrpSchemaString str;
-    TrpSchemaNumber nbr;
 
+    TrpSchemaString str;
     str.max(5);
-    arr.item(&str).uniq(true);
+    TrpSchemaString nbr;
+    nbr.min(10);
+
+    SchemaVec vec;
+
+    vec.push_back(&str);
+    vec.push_back(&nbr);
+
+    arr.tuple(vec).uniq(true);
 
     TrpValidatorContext ctx;
 
