@@ -1,6 +1,6 @@
 #include "../include/TrpValidatorContext.hpp"
 
-TrpValidatorContext::TrpValidatorContext( size_t _max_errors ) : max_errors(_max_errors) {}
+TrpValidatorContext::TrpValidatorContext( void ) {}
 
 void TrpValidatorContext::pushPath( const std::string _path ) {
     if ( _path.empty() ) return;
@@ -25,3 +25,11 @@ std::string TrpValidatorContext::getCurrentPath( void ) {
 
     return full_path;
 }
+
+const TrpValidationError& TrpValidatorContext::getErrors( void ) const {
+    return errors;
+}
+
+// const std::string TrpValidatorContext::getError( void ) const {
+//     return ;
+// }

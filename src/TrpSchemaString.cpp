@@ -16,13 +16,15 @@ TrpSchemaString& TrpSchemaString::max( size_t _max_len ) {
 }
 
 bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
+    bool got_error = false;
+
     if ( !value || value->getType() != TRP_STRING ) {
         ValidationError err;
 
-        err.path = ctx.getCurrentPath();
-        err.msg = "Expected string";
         err.expected = SCHEMA_STRING;
         err.actual = value ? value->getType() : TRP_NULL;
+        err.path = ctx.getCurrentPath();
+        err.msg = "Expected string, found " + tokenTypeToString(err.actual);
 
         ctx.pushError( err );
         return false;
@@ -33,28 +35,28 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ValidationError err;
 
         std::stringstream error;
-        error << "String size should be at most " << max_len << "chars, but got " << str->getValue().size();
+        error << "String size should be at most " << max_len << " chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
         err.msg = error.str();
         err.expected = SCHEMA_STRING;
         err.actual = value->getType();
 
         ctx.pushError( err );
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
     if (has_min && str->getValue().size() < min_len) {
         ValidationError err;
 
         std::stringstream error;
-        error << "String size should be at least " << max_len << "chars, but got " << str->getValue().size();
+        error << "String size should be at least " << max_len << " chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
         err.msg = error.str();
         err.expected = SCHEMA_STRING;
         err.actual = value->getType();
 
         ctx.pushError( err );
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
     return true;

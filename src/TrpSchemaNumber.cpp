@@ -17,11 +17,13 @@ TrpSchemaNumber& TrpSchemaNumber::max( size_t _max_value ) {
 }
 
 bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
+    bool got_error = false;
+
     if ( !value || value->getType() != TRP_NUMBER ) {
         ValidationError err;
 
         err.path = ctx.getCurrentPath();
-        err.msg = "Expected number";
+        err.msg = "Expected number, found " + tokenTypeToString(err.actual);
         err.expected = SCHEMA_NUMBER;
         err.actual = value->getType();
 
@@ -40,7 +42,7 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         err.actual = value->getType();
 
         ctx.pushError( err );
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
     if ( has_min && nbr->getValue() < min_value ) {
@@ -52,8 +54,9 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         err.actual = value->getType();
 
         ctx.pushError( err );
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
+    if ( got_error ) return false;
     return true;
 }

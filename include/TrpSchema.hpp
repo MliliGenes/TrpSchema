@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TrpValidatorContext.hpp"
+#include "tokenTypeToString.hpp"
 #include <sstream>
 #include <string>
 #include <set>

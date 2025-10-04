@@ -40,13 +40,15 @@ std::string intToString( int nbr ) {
 }
 
 bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
+    bool got_error = false;
+
     if ( !value || value->getType() != TRP_ARRAY ) {
         ValidationError err;
 
-        err.path = ctx.getCurrentPath();
-        err.msg = "Expected array";
         err.expected = SCHEMA_ARRAY;
         err.actual = value ? value->getType() : TRP_NULL;
+        err.msg = "Expected array, found " + tokenTypeToString(err.actual);
+        err.path = ctx.getCurrentPath();
 
         ctx.pushError( err );
         return false;
@@ -64,7 +66,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         err.actual = TRP_ARRAY;
 
         ctx.pushError(err);
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
     if ( has_min && arr->size() < min_items ) {
@@ -78,15 +80,14 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         err.actual = TRP_ARRAY;
 
         ctx.pushError(err);
-        return false;
+        if ( !got_error ) got_error = true;
     }
 
     if ( _item ) {
         for ( int i = 0; i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_item->validate( arr->at(i), ctx ) ) {
-                ctx.popPath();
-                return false;
+                if ( !got_error ) got_error = true;
             }
             ctx.popPath();
         }
@@ -96,8 +97,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         for ( int i = 0; i < _tuple.size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
-                ctx.popPath();
-                return false;
+                if ( !got_error ) got_error = true;
             }
             ctx.popPath();
         }
@@ -143,15 +143,15 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
                 ctx.pushPath("[" + intToString(i) + "]");
                 err.path = ctx.getCurrentPath();
                 ctx.popPath();
-                err.msg = "Duplicate item found in array. Items must be unique.";
+                err.msg = "Duplicate item found in array, Items must be unique";
                 err.expected = SCHEMA_ARRAY;
                 err.actual = TRP_ARRAY;
         
                 ctx.pushError(err);
-                return false;
+                if ( !got_error ) got_error = true;
             }
         }
     }
-
+    if ( got_error ) return false;
     return true;
 }

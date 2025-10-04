@@ -33,16 +33,18 @@ class TrpValidatorContext {
     private:
         TrpValidationError errors;
         TrpValidationPath paths;
-        size_t max_errors;
 
     public:
-        TrpValidatorContext( size_t _max_errors );
+        TrpValidatorContext( void );
 
         void pushPath(const std::string _path);
         void popPath();
 
         void pushError(ValidationError _err);
         std::string getCurrentPath( void );
+
+        const TrpValidationError& getErrors( void ) const ;
+        // const std::string& getError( void ) const;
 };
 
 #endif

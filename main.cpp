@@ -9,7 +9,9 @@ int main (int ac, char ** av) {
     if (ac != 2) return 1;
     TrpJsonParser parser(av[1]);
 
-    parser.parse();
+    if (!parser.parse()) {
+        std::cerr << "zaba" << std::endl;
+    }
 
     parser.prettyPrint();
 
@@ -17,14 +19,19 @@ int main (int ac, char ** av) {
     TrpSchemaString str;
     TrpSchemaNumber nbr;
 
-    str.max(50);
-    arr.tuple(std::vector<TrpSchema*>{}).uniq(true);
+    str.max(5);
+    arr.item(&str).uniq(true);
 
-    TrpValidatorContext ctx(100);
+    TrpValidatorContext ctx;
 
 
     if (!arr.validate(parser.getAST(), ctx)) {
-        std::cerr << "bad trip" << std::endl;
+        const TrpValidationError& errors = ctx.getErrors();
+
+        for ( int i = 0; i < errors.size(); i++ ) {
+            std::cerr << errors[i].path << ": "
+            << errors[i].msg << std::endl;
+        }
     } else {
         std::cout << "good trip" << std::endl;
     }
