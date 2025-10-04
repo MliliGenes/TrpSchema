@@ -22,10 +22,10 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
     if ( !value || value->getType() != TRP_NUMBER ) {
         ValidationError err;
 
+        err.expected = SCHEMA_NUMBER;
+        err.actual = value ? value->getType() : TRP_ERROR;
         err.path = ctx.getCurrentPath();
         err.msg = "Expected number, found " + tokenTypeToString(err.actual);
-        err.expected = SCHEMA_NUMBER;
-        err.actual = value->getType();
 
         ctx.pushError( err );
         return false;

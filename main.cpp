@@ -18,8 +18,8 @@ int main (int ac, char ** av) {
     TrpSchemaArray arr;
 
     TrpSchemaString str;
-    str.max(5);
-    TrpSchemaString nbr;
+    str.max(2);
+    TrpSchemaNumber nbr;
     nbr.min(10);
 
     SchemaVec vec;
