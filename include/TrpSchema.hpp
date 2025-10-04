@@ -11,7 +11,7 @@
 class TrpSchema
 {
     public:
-        virtual ~TrpSchema( void ) = 0;
+        virtual ~TrpSchema( void ) {};
         virtual bool validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const = 0;
         virtual SchemaType getType() const = 0;
 };

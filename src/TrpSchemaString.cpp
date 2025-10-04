@@ -4,13 +4,13 @@
 TrpSchemaString::TrpSchemaString( void ) : has_max(false), has_min(false) {}
 
 TrpSchemaString& TrpSchemaString::min( size_t _min_len ) {
-    if (!has_min) has_min = false;
+    if (!has_min) has_min = true;
     min_len = _min_len;
     return *this;
 }
 
 TrpSchemaString& TrpSchemaString::max( size_t _max_len ) {
-    if (!has_max) has_max = false;
+    if (!has_max) has_max = true;
     max_len = _max_len;
     return *this;
 }

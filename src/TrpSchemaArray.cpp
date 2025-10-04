@@ -58,7 +58,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
 
         err.path = ctx.getCurrentPath();
         std::stringstream ss;
-        ss << "Array must contain at least " << min_items << " items, but got " << arr->size();
+        ss << "Array must contain at most " << max_items << " items, but got " << arr->size();
         err.msg = ss.str();
         err.expected = SCHEMA_ARRAY;
         err.actual = TRP_ARRAY;
@@ -72,7 +72,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
 
         err.path = ctx.getCurrentPath();
         std::stringstream ss;
-        ss << "Array must contain at most " << max_items << " items, but got " << arr->size();
+        ss << "Array must contain at least " << min_items << " items, but got " << arr->size();
         err.msg = ss.str();
         err.expected = SCHEMA_ARRAY;
         err.actual = TRP_ARRAY;
@@ -93,7 +93,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( !_tuple.empty() ) {
-        for ( int i = 0; i < arr->size(); i++ ) {
+        for ( int i = 0; i < _tuple.size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
                 ctx.popPath();
