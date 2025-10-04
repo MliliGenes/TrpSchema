@@ -15,9 +15,10 @@ int main (int ac, char ** av) {
 
     TrpSchemaArray arr;
     TrpSchemaString str;
+    TrpSchemaNumber nbr;
 
-    str.min(10);
-    arr.item(&str.min(2)).max(1).min(1).uniq(true);
+    str.max(50);
+    arr.tuple(std::vector<TrpSchema*>{}).uniq(true);
 
     TrpValidatorContext ctx(100);
 
