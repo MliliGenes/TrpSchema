@@ -97,7 +97,6 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         for ( int i = 0; i < _tuple.size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
-                std::cerr << "zaba" << std::endl;
                 ctx.popPath();
                 if ( !got_error ) got_error = true;
             }
