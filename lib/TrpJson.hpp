@@ -1,86 +1,28 @@
 #pragma once
 
-// TrpJSON - Comprehensive Header with All Declarations
-// This file contains all macros, enums, classes, templates and signatures
-// from the include/**/*.hpp files consolidated into a single header
+#ifndef TRPJSON_HPP
+#define TRPJSON_HPP
 
-#ifndef TRPJSON_ALL_HPP
-#define TRPJSON_ALL_HPP
+// =============================================================================
+// TrpJSON - Complete Header-Only JSON Parser Library
+// Consolidated from include/**/*.hpp files
+// C++98 Compatible - No external dependencies
+// =============================================================================
 
-// ============================================================================
-// STANDARD LIBRARY INCLUDES
-// ============================================================================
+// Standard Library Includes
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <map>
 #include <string>
 #include <cstddef>
-#include <stdexcept>
+#include <sstream>
 #include <cstdlib>
 
-// ============================================================================
-// MACROS AND DEFINES - Color codes for terminal output
-// ============================================================================
-#define RESET          "\033[0m"
-#define STRING_COLOR   "\033[31m"      // Red for strings
-#define NUMBER_COLOR   "\033[33m"      // Yellow for numbers  
-#define BOOL_COLOR     "\033[32m"      // Green for true/false
-#define NULL_COLOR     "\033[35m"      // Magenta for null
-#define KEY_COLOR      "\033[94m"      // Bright blue for keys
-#define BRACE_COLOR    "\033[36m"      // Cyan for {} []
-#define PUNCT_COLOR    "\033[37m"      // White for punctuation
+// =============================================================================
+// CORE TYPE DEFINITIONS (from core/TrpJsonType.hpp)
+// =============================================================================
 
-// Header guards from original files
-#ifndef TRP_TOKEN_TYPE
-#define TRP_TOKEN_TYPE
-#endif
-
-#ifndef TRPVALUE_HPP
-#define TRPVALUE_HPP
-#endif
-
-#ifndef TRPJSONLEXER_HPP
-#define TRPJSONLEXER_HPP
-#endif
-
-#ifndef AUTOPOINTER_HPP
-#define AUTOPOINTER_HPP
-#endif
-
-#ifndef TRPJSONPARSER_HPP
-#define TRPJSONPARSER_HPP
-#endif
-
-#ifndef TRPOBJECT_HPP
-#define TRPOBJECT_HPP
-#endif
-
-#ifndef TRPJSONARRAY_HPP
-#define TRPJSONARRAY_HPP
-#endif
-
-#ifndef TRPJSONSTRING_HPP
-#define TRPJSONSTRING_HPP
-#endif
-
-#ifndef TRPJSONNUMBER_HPP
-#define TRPJSONNUMBER_HPP
-#endif
-
-#ifndef TRPJSONBOOL_HPP
-#define TRPJSONBOOL_HPP
-#endif
-
-#ifndef TRPJSONNULL_HPP
-#define TRPJSONNULL_HPP
-#endif
-
-// ============================================================================
-// ENUMERATIONS
-// ============================================================================
-
-// JSON value types enumeration
 enum TrpType {
     TRP_NULL,
     TRP_BOOL,
@@ -91,321 +33,838 @@ enum TrpType {
     TRP_ERROR
 };
 
-// Token types for lexer
+typedef enum TrpType TrpJsonType;
+
+// =============================================================================
+// TOKEN TYPE DEFINITIONS (from core/TrpJsonLexer.hpp)
+// =============================================================================
+
 enum TrpTokenType {
-    T_BRACE_OPEN,
-    T_BRACE_CLOSE,
-    T_BRACKET_OPEN,
-    T_BRACKET_CLOSE,
-    T_COLON,
-    T_COMMA,
-    T_STRING,
-    T_NUMBER,
-    T_TRUE,
-    T_FALSE,
-    T_NULL,
-    T_END_OF_FILE,
-    T_ERROR
+    T_BRACE_OPEN,      // {
+    T_BRACE_CLOSE,     // }
+    T_BRACKET_OPEN,    // [
+    T_BRACKET_CLOSE,   // ]
+    T_COLON,           // :
+    T_COMMA,           // ,
+    T_STRING,          // "string"
+    T_NUMBER,          // 123, 123.45
+    T_TRUE,            // true
+    T_FALSE,           // false
+    T_NULL,            // null
+    T_END_OF_FILE,     // EOF
+    T_ERROR            // Error token
 };
 
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
-typedef enum TrpType TrpJsonType;
+// Token structure
+struct token {
+    TrpTokenType type;
+    std::string value;
+    size_t line;  // 0-based line number
+    size_t col;   // 0-based column number
+};
+
+// Type definitions for containers
 typedef std::string::iterator stringIterator;
 typedef std::map<std::string, class ITrpJsonValue*> JsonObjectMap;
 typedef std::pair<std::string, class ITrpJsonValue*> JsonObjectEntry;
 typedef std::vector<class ITrpJsonValue*> JsonArrayVector;
 
-// ============================================================================
-// STRUCTURES
-// ============================================================================
+// =============================================================================
+// AUTOPOINTER TEMPLATE (from core/TrpAutoPointer.hpp)
+// =============================================================================
 
-// Token structure for lexer
-struct token {
-    TrpTokenType type;
-    std::string value;
-    size_t line; // 0-based line number
-    size_t col;  // 0-based column number
-};
-
-// ============================================================================
-// FORWARD DECLARATIONS
-// ============================================================================
-class ITrpJsonValue;
-class TrpJsonObject;
-class TrpJsonArray;
-class TrpJsonString;
-class TrpJsonNumber;
-class TrpJsonBool;
-class TrpJsonNull;
-class TrpJsonLexer;
-class TrpJsonParser;
-
-// ============================================================================
-// TEMPLATE CLASSES
-// ============================================================================
-
-// RAII smart pointer template for C++98 compatibility
 template <typename T>
 class AutoPointer {
-    private:
-        T* ptr;
+private:
+    T* ptr;
 
-        // Disable copy constructor and copy assignment
-        AutoPointer(const AutoPointer& _other);
-        AutoPointer& operator=(const AutoPointer& _other);
+    // Disable copy constructor and copy assignment for C++98 safety
+    AutoPointer(const AutoPointer& _other);
+    AutoPointer& operator=(const AutoPointer& _other);
 
-    public:
-        // Constructor
-        AutoPointer(T* _ptr = NULL) : ptr(_ptr) {
-            // RAII initialization
+public:
+    // Constructor
+    explicit AutoPointer(T* _ptr = NULL) : ptr(_ptr) {}
+
+    // Destructor - automatic cleanup
+    ~AutoPointer() {
+        delete ptr;
+    }
+
+    // Check if pointer is null
+    bool isNULL() const {
+        return (ptr == NULL);
+    }
+
+    // Release ownership and return pointer
+    T* release() {
+        if (!isNULL()) {
+            T* tmp = ptr;
+            ptr = NULL;
+            return tmp;
         }
+        return NULL;
+    }
 
-        // Destructor - automatic cleanup
-        ~AutoPointer(void) {
+    // Get raw pointer without transferring ownership
+    T* get() const {
+        return ptr;
+    }
+
+    // Reset pointer with new value
+    void reset(T* _ptr) {
+        if (!isNULL()) {
             delete ptr;
         }
+        ptr = _ptr;
+    }
 
-        // Check if pointer is null
-        bool isNULL(void) const {
-            return (ptr == NULL);
-        }
+    // Dereference operator
+    T& operator*() const {
+        return *ptr;
+    }
 
-        // Release ownership and return pointer
-        T* release(void) {
-            if (!isNULL()) {
-                T* tmp = ptr;
-                ptr = NULL;
-                return tmp;
-            }
-            return NULL;
-        }
-
-        // Get raw pointer without transferring ownership
-        T* get() const {
-            return ptr;
-        }
-
-        // Reset pointer with new value
-        void reset(T* _ptr) {
-            if (!isNULL()) {
-                delete ptr;
-                ptr = _ptr;
-            }
-            ptr = _ptr;
-        }
-
-        // Dereference operator
-        T& operator*() const {
-            return *ptr;
-        }
-
-        // Arrow operator
-        T* operator->() const {
-            return ptr;
-        }
+    // Arrow operator
+    T* operator->() const {
+        return ptr;
+    }
 };
 
-// ============================================================================
-// BASE INTERFACE CLASS
-// ============================================================================
+// =============================================================================
+// BASE JSON VALUE INTERFACE (from core/TrpJsonValue.hpp)
+// =============================================================================
 
-// Base interface for all JSON value types
 class ITrpJsonValue {
-    public:
-        ITrpJsonValue(void) {}
-        virtual ~ITrpJsonValue(void) = 0;
-        virtual TrpJsonType getType(void) const = 0;
+public:
+    ITrpJsonValue() {}
+    virtual ~ITrpJsonValue() {}
+    virtual TrpJsonType getType() const = 0;
 };
 
-// ============================================================================
-// LEXER CLASS DECLARATION
-// ============================================================================
+// =============================================================================
+// JSON VALUE CLASSES (from values/*.hpp)
+// =============================================================================
+
+// JSON Object Class (from values/TrpJsonObject.hpp)
+class TrpJsonObject : public ITrpJsonValue {
+private:
+    JsonObjectMap m_members;
+
+public:
+    TrpJsonObject() {}
+    
+    ~TrpJsonObject() {
+        for (JsonObjectMap::iterator it = m_members.begin(); it != m_members.end(); ++it) {
+            delete it->second;
+        }
+    }
+
+    TrpJsonType getType() const {
+        return TRP_OBJECT;
+    }
+
+    void add(std::string key, ITrpJsonValue* value) {
+        m_members[key] = value;
+    }
+
+    ITrpJsonValue* find(std::string key) {
+        JsonObjectMap::iterator it = m_members.find(key);
+        return (it != m_members.end()) ? it->second : NULL;
+    }
+
+    JsonObjectMap::const_iterator begin() const {
+        return m_members.begin();
+    }
+
+    JsonObjectMap::const_iterator end() const {
+        return m_members.end();
+    }
+
+    size_t size() const {
+        return m_members.size();
+    }
+};
+
+// JSON Array Class (from values/TrpJsonArray.hpp)
+class TrpJsonArray : public ITrpJsonValue {
+private:
+    JsonArrayVector m_elements;
+
+public:
+    TrpJsonArray() {}
+    
+    ~TrpJsonArray() {
+        for (size_t i = 0; i < m_elements.size(); ++i) {
+            delete m_elements[i];
+        }
+    }
+
+    TrpJsonType getType() const {
+        return TRP_ARRAY;
+    }
+
+    void add(ITrpJsonValue* value) {
+        m_elements.push_back(value);
+    }
+
+    ITrpJsonValue* at(size_t index) {
+        return (index < m_elements.size()) ? m_elements[index] : NULL;
+    }
+
+    size_t size() const {
+        return m_elements.size();
+    }
+};
+
+// JSON String Class (from values/TrpJsonString.hpp)
+class TrpJsonString : public ITrpJsonValue {
+private:
+    std::string m_value;
+
+public:
+    explicit TrpJsonString(const std::string& value) : m_value(value) {}
+    
+    ~TrpJsonString() {}
+
+    TrpJsonType getType() const {
+        return TRP_STRING;
+    }
+
+    const std::string& getValue() const {
+        return m_value;
+    }
+};
+
+// JSON Number Class (from values/TrpJsonNumber.hpp)
+class TrpJsonNumber : public ITrpJsonValue {
+private:
+    double m_value;
+
+public:
+    explicit TrpJsonNumber(double value) : m_value(value) {}
+    
+    ~TrpJsonNumber() {}
+
+    TrpJsonType getType() const {
+        return TRP_NUMBER;
+    }
+
+    double getValue() const {
+        return m_value;
+    }
+};
+
+// JSON Boolean Class (from values/TrpJsonBool.hpp)
+class TrpJsonBool : public ITrpJsonValue {
+private:
+    bool m_value;
+
+public:
+    explicit TrpJsonBool(bool value) : m_value(value) {}
+    
+    ~TrpJsonBool() {}
+
+    TrpJsonType getType() const {
+        return TRP_BOOL;
+    }
+
+    bool getValue() const {
+        return m_value;
+    }
+};
+
+// JSON Null Class (from values/TrpJsonNull.hpp)
+class TrpJsonNull : public ITrpJsonValue {
+public:
+    TrpJsonNull() {}
+    
+    ~TrpJsonNull() {}
+
+    TrpJsonType getType() const {
+        return TRP_NULL;
+    }
+};
+
+// =============================================================================
+// LEXER CLASS (from core/TrpJsonLexer.hpp)
+// =============================================================================
 
 class TrpJsonLexer {
-    private:
-        // File data
-        std::ifstream json_file;
-        std::string file_name;
+private:
+    std::ifstream json_file;
+    std::string file_name;
+    bool has_next_line;
+    std::string current_line;
+    std::string next_line;
+    size_t line;
+    size_t col;
+    stringIterator current;
+    stringIterator line_end;
 
-        // Line data
-        bool has_next_line;
-        std::string current_line;
-        std::string next_line;
+    void skipWhitespace() {
+        while (current != line_end && (*current == ' ' || *current == '\t' || *current == '\r')) {
+            ++current;
+            ++col;
+        }
+    }
 
-        // Coordinates for debugging and errors
-        size_t line;
-        size_t col;
+    char peekChar() const {
+        return (current != line_end) ? *current : '\0';
+    }
 
-        // Iterator for current position
-        stringIterator current;
-        stringIterator line_end;
+    char getChar() {
+        if (current != line_end) {
+            char c = *current;
+            ++current;
+            ++col;
+            return c;
+        }
+        return '\0';
+    }
 
-        // Private methods
-        void skipWhitespace();
-        char peekChar() const;
-        char getChar();
-        void advanceLexer();
-        void pushBackLexer();
-        token readString();
-        token readNumber();
-        token readLiteral();
-        token createErrorToken(const std::string &message);
-        bool loadNextLineIfNeeded();
-        bool isAtEndOfLine() const;
-        bool isAtEnd() const;
+    void advanceLexer() {
+        if (current != line_end) {
+            ++current;
+            ++col;
+        }
+    }
 
-    public:
-        // Constructor
-        TrpJsonLexer(std::string file_name);
+    void pushBackLexer() {
+        if (current != current_line.begin()) {
+            --current;
+            --col;
+        }
+    }
+
+    token readString() {
+        token t;
+        t.type = T_STRING;
+        t.line = line;
+        t.col = col;
         
-        // Destructor
-        ~TrpJsonLexer(void);
-
-        // Public interface
-        token getNextToken(void);
-        bool isOpen(void);
-        const std::string getFileName(void) const;
-        void reset(void);
-};
-
-// ============================================================================
-// VALUE TYPE CLASS DECLARATIONS
-// ============================================================================
-
-// JSON Object class
-class TrpJsonObject : public ITrpJsonValue {
-    private:
-        JsonObjectMap m_members;
-
-    public:
-        TrpJsonObject(void);
-        ~TrpJsonObject(void);
-        TrpJsonType getType(void) const;
-        void add(std::string key, ITrpJsonValue* value);
-        ITrpJsonValue* find(std::string key);
+        advanceLexer(); // Skip opening quote
         
-        // Iterator support for serialization
-        JsonObjectMap::const_iterator begin() const;
-        JsonObjectMap::const_iterator end() const;
-        size_t size() const;
+        while (current != line_end && *current != '"') {
+            if (*current == '\\') {
+                advanceLexer();
+                if (current == line_end) break;
+                
+                char escaped = *current;
+                switch (escaped) {
+                    case '"': t.value += '"'; break;
+                    case '\\': t.value += '\\'; break;
+                    case '/': t.value += '/'; break;
+                    case 'b': t.value += '\b'; break;
+                    case 'f': t.value += '\f'; break;
+                    case 'n': t.value += '\n'; break;
+                    case 'r': t.value += '\r'; break;
+                    case 't': t.value += '\t'; break;
+                    default: t.value += escaped; break;
+                }
+            } else {
+                t.value += *current;
+            }
+            advanceLexer();
+        }
+        
+        if (current != line_end && *current == '"') {
+            advanceLexer(); // Skip closing quote
+        }
+        
+        return t;
+    }
+
+    token readNumber() {
+        token t;
+        t.type = T_NUMBER;
+        t.line = line;
+        t.col = col;
+        
+        while (current != line_end && 
+               ((*current >= '0' && *current <= '9') || *current == '.' || *current == '-' || *current == '+' || *current == 'e' || *current == 'E')) {
+            t.value += *current;
+            advanceLexer();
+        }
+        
+        return t;
+    }
+
+    token readLiteral() {
+        token t;
+        t.line = line;
+        t.col = col;
+        
+        std::string literal;
+        while (current != line_end && 
+               ((*current >= 'a' && *current <= 'z') || (*current >= 'A' && *current <= 'Z'))) {
+            literal += *current;
+            advanceLexer();
+        }
+        
+        if (literal == "true") {
+            t.type = T_TRUE;
+            t.value = "true";
+        } else if (literal == "false") {
+            t.type = T_FALSE;
+            t.value = "false";
+        } else if (literal == "null") {
+            t.type = T_NULL;
+            t.value = "null";
+        } else {
+            t.type = T_ERROR;
+            t.value = "Unknown literal: " + literal;
+        }
+        
+        return t;
+    }
+
+    token createErrorToken(const std::string& message) {
+        token t;
+        t.type = T_ERROR;
+        t.value = message;
+        t.line = line;
+        t.col = col;
+        return t;
+    }
+
+    bool loadNextLineIfNeeded() {
+        if (current == line_end) {
+            if (has_next_line) {
+                current_line = next_line;
+                current = current_line.begin();
+                line_end = current_line.end();
+                ++line;
+                col = 0;
+                
+                if (std::getline(json_file, next_line)) {
+                    has_next_line = true;
+                } else {
+                    has_next_line = false;
+                }
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    bool isAtEndOfLine() const {
+        return current == line_end;
+    }
+
+    bool isAtEnd() const {
+        return isAtEndOfLine() && !has_next_line;
+    }
+
+public:
+    explicit TrpJsonLexer(const std::string& filename) 
+        : file_name(filename), has_next_line(false), line(0), col(0) {
+        json_file.open(filename.c_str());
+        
+        if (json_file.is_open()) {
+            if (std::getline(json_file, current_line)) {
+                current = current_line.begin();
+                line_end = current_line.end();
+                
+                if (std::getline(json_file, next_line)) {
+                    has_next_line = true;
+                }
+            }
+        }
+    }
+
+    ~TrpJsonLexer() {
+        if (json_file.is_open()) {
+            json_file.close();
+        }
+    }
+
+    token getNextToken() {
+        if (!loadNextLineIfNeeded()) {
+            token t;
+            t.type = T_END_OF_FILE;
+            t.line = line;
+            t.col = col;
+            return t;
+        }
+
+        skipWhitespace();
+
+        if (isAtEndOfLine()) {
+            return getNextToken(); // Try next line
+        }
+
+        token t;
+        t.line = line;
+        t.col = col;
+
+        char c = peekChar();
+        switch (c) {
+            case '{': t.type = T_BRACE_OPEN; t.value = "{"; advanceLexer(); break;
+            case '}': t.type = T_BRACE_CLOSE; t.value = "}"; advanceLexer(); break;
+            case '[': t.type = T_BRACKET_OPEN; t.value = "["; advanceLexer(); break;
+            case ']': t.type = T_BRACKET_CLOSE; t.value = "]"; advanceLexer(); break;
+            case ':': t.type = T_COLON; t.value = ":"; advanceLexer(); break;
+            case ',': t.type = T_COMMA; t.value = ","; advanceLexer(); break;
+            case '"': return readString();
+            case 't': case 'f': case 'n': return readLiteral();
+            default:
+                if ((c >= '0' && c <= '9') || c == '-') {
+                    return readNumber();
+                } else {
+                    return createErrorToken("Unexpected character");
+                }
+        }
+
+        return t;
+    }
+
+    bool isOpen() const {
+        return json_file.is_open();
+    }
+
+    std::string getFileName() const {
+        return file_name;
+    }
+
+    void reset() {
+        if (json_file.is_open()) {
+            json_file.clear();
+            json_file.seekg(0, std::ios::beg);
+            line = 0;
+            col = 0;
+            
+            if (std::getline(json_file, current_line)) {
+                current = current_line.begin();
+                line_end = current_line.end();
+                
+                if (std::getline(json_file, next_line)) {
+                    has_next_line = true;
+                } else {
+                    has_next_line = false;
+                }
+            }
+        }
+    }
 };
 
-// JSON Array class
-class TrpJsonArray : public ITrpJsonValue {
-    private:
-        JsonArrayVector m_elements;
-
-    public:
-        TrpJsonArray(void);
-        ~TrpJsonArray(void);
-        TrpJsonType getType(void) const;
-        void add(ITrpJsonValue* value);
-        ITrpJsonValue* at(size_t index);
-        size_t size(void) const;
-};
-
-// JSON String class
-class TrpJsonString : public ITrpJsonValue {
-    private:
-        std::string m_value;
-    
-    public:
-        TrpJsonString(std::string value) : m_value(value) {}
-        ~TrpJsonString(void);
-        TrpJsonType getType(void) const;
-        const std::string& getValue(void) const;
-};
-
-// JSON Number class
-class TrpJsonNumber : public ITrpJsonValue {
-    private:
-        double m_value;
-    
-    public:
-        TrpJsonNumber(double value) : m_value(value) {}
-        ~TrpJsonNumber(void);
-        TrpJsonType getType(void) const;
-        const double& getValue(void) const;
-};
-
-// JSON Boolean class
-class TrpJsonBool : public ITrpJsonValue {
-    private:
-        bool m_value;
-    
-    public:
-        TrpJsonBool(bool value) : m_value(value) {}
-        ~TrpJsonBool(void);
-        TrpJsonType getType(void) const;
-        const bool& getValue(void) const;
-};
-
-// JSON Null class
-class TrpJsonNull : public ITrpJsonValue {
-    public:
-        TrpJsonType getType(void) const;
-};
-
-// ============================================================================
-// PARSER CLASS DECLARATION
-// ============================================================================
+// =============================================================================
+// PARSER CLASS (from parser/TrpJsonParser.hpp)
+// =============================================================================
 
 class TrpJsonParser {
-    private:
-        TrpJsonLexer* lexer;
-        ITrpJsonValue* head;
-        bool parsed;
-        token last_err;
+private:
+    TrpJsonLexer* lexer;
+    ITrpJsonValue* head;
+    bool parsed;
+    token last_err;
 
-        // Private parsing methods
-        ITrpJsonValue* parseArray(token& current_token);
-        ITrpJsonValue* parseObject(token& current_token);
-        ITrpJsonValue* parseString(token& current_token);
-        ITrpJsonValue* parseNumber(token& current_token);
-        ITrpJsonValue* parseLiteral(token& current_token);
-        ITrpJsonValue* parseValue(token& current_token);
+    ITrpJsonValue* parseArray(token& current_token) {
+        if (current_token.type != T_BRACKET_OPEN) return NULL;
 
-        // Disable copy constructor and assignment
-        TrpJsonParser(const TrpJsonParser& other);
-        TrpJsonParser& operator=(const TrpJsonParser& other);
-
-    public:
-        // Constructors
-        TrpJsonParser(void);
-        TrpJsonParser(const std::string _file_name);
+        AutoPointer<TrpJsonArray> arr_ptr(new TrpJsonArray());
+        token t = lexer->getNextToken();
         
-        // Destructor
-        ~TrpJsonParser(void);
+        if (t.type == T_BRACKET_CLOSE) return arr_ptr.release();
 
-        // Lexer management
-        void resetLexer(TrpJsonLexer* new_lexer);
-        void setLexer(TrpJsonLexer* _lexer);
+        while (true) {
+            ITrpJsonValue* tmp_value = parseValue(t);
+            if (!tmp_value) return NULL;
+            
+            arr_ptr->add(tmp_value);
+            
+            t = lexer->getNextToken();
+            if (t.type == T_BRACKET_CLOSE) {
+                break;
+            } else if (t.type == T_COMMA) {
+                t = lexer->getNextToken();
+                continue;
+            } else {
+                return NULL;
+            }
+        }
 
-        // Parsing operations
-        bool parse(void);
-        ITrpJsonValue* getAST(void) const;
-        ITrpJsonValue* release(void);
+        return arr_ptr.release();
+    }
 
-        // State management
-        bool isParsed(void) const;
-        const token& getLastError(void) const;
-        void lastError(void) const;
-        void clearAST(void);
-        void reset(void);
+    ITrpJsonValue* parseObject(token& current_token) {
+        if (current_token.type != T_BRACE_OPEN) return NULL;
 
-        // Output operations
-        std::string astToString(void) const;
-        void prettyPrint() const;
+        AutoPointer<TrpJsonObject> obj_ptr(new TrpJsonObject());
+        token t = lexer->getNextToken();
+        
+        if (t.type == T_BRACE_CLOSE) return obj_ptr.release();
+
+        while (true) {
+            if (t.type != T_STRING) return NULL;
+            
+            std::string key = t.value;
+            
+            t = lexer->getNextToken();
+            if (t.type != T_COLON) return NULL;
+            
+            t = lexer->getNextToken();
+            ITrpJsonValue* tmp_value = parseValue(t);
+            if (!tmp_value) return NULL;
+            
+            obj_ptr->add(key, tmp_value);
+            
+            t = lexer->getNextToken();
+            if (t.type == T_BRACE_CLOSE) {
+                break;
+            } else if (t.type == T_COMMA) {
+                t = lexer->getNextToken();
+                continue;
+            } else {
+                return NULL;
+            }
+        }
+
+        return obj_ptr.release();
+    }
+
+    ITrpJsonValue* parseString(token& current_token) {
+        if (current_token.type != T_STRING) return NULL;
+        return new TrpJsonString(current_token.value);
+    }
+
+    ITrpJsonValue* parseNumber(token& current_token) {
+        if (current_token.type != T_NUMBER) return NULL;
+        double value = std::atof(current_token.value.c_str());
+        return new TrpJsonNumber(value);
+    }
+
+    ITrpJsonValue* parseLiteral(token& current_token) {
+        switch (current_token.type) {
+            case T_TRUE:
+                return new TrpJsonBool(true);
+            case T_FALSE:
+                return new TrpJsonBool(false);
+            case T_NULL:
+                return new TrpJsonNull();
+            default:
+                return NULL;
+        }
+    }
+
+    ITrpJsonValue* parseValue(token& current_token) {
+        switch (current_token.type) {
+            case T_BRACE_OPEN:
+                return parseObject(current_token);
+            case T_BRACKET_OPEN:
+                return parseArray(current_token);
+            case T_STRING:
+                return parseString(current_token);
+            case T_NUMBER:
+                return parseNumber(current_token);
+            case T_TRUE:
+            case T_FALSE:
+            case T_NULL:
+                return parseLiteral(current_token);
+            default:
+                lastError(current_token);
+                return NULL;
+        }
+    }
+
+    // Disable copy constructor and assignment
+    TrpJsonParser(const TrpJsonParser& other);
+    TrpJsonParser& operator=(const TrpJsonParser& other);
+
+public:
+    TrpJsonParser() : lexer(NULL), head(NULL), parsed(false) {
+        last_err.type = T_ERROR;
+    }
+
+    explicit TrpJsonParser(const std::string& file_name) : head(NULL), parsed(false) {
+        lexer = new TrpJsonLexer(file_name);
+        last_err.type = T_ERROR;
+    }
+
+    ~TrpJsonParser() {
+        clearAST();
+        delete lexer;
+    }
+
+    void resetLexer(TrpJsonLexer* new_lexer) {
+        if (!new_lexer || !new_lexer->isOpen()) return;
+        delete lexer;
+        lexer = new_lexer;
+        reset();
+    }
+
+    void setLexer(TrpJsonLexer* _lexer) {
+        resetLexer(_lexer);
+    }
+
+    bool parse() {
+        if (!lexer || !lexer->isOpen()) return false;
+        
+        clearAST();
+        
+        token t = lexer->getNextToken();
+        head = parseValue(t);
+        parsed = (head != NULL);
+        
+        return parsed;
+    }
+
+    ITrpJsonValue* getAST() const {
+        return head;
+    }
+
+    ITrpJsonValue* release() {
+        ITrpJsonValue* tmp = head;
+        head = NULL;
+        parsed = false;
+        return tmp;
+    }
+
+    bool isParsed() const {
+        return parsed;
+    }
+
+    const token& getLastError() const {
+        return last_err;
+    }
+
+    void lastError(token t) {
+        if (t.type != T_ERROR) t.value = "Expected token";
+        last_err = t;
+        
+        if (lexer) {
+            std::cerr << lexer->getFileName() << ":" << t.line << ":" << t.col 
+                      << " Error: " << t.value << std::endl;
+        }
+    }
+
+    void clearAST() {
+        delete head;
+        head = NULL;
+        parsed = false;
+    }
+
+    void reset() {
+        clearAST();
+        parsed = false;
+        last_err.type = T_ERROR;
+        last_err.value.clear();
+        last_err.col = 0;
+        last_err.line = 0;
+    }
+
+    std::string astToString() const {
+        if (!head) return "";
+        return valueToString(head, 0);
+    }
+
+    void prettyPrint() const {
+        if (head) {
+            std::cout << astToString() << std::endl;
+        }
+    }
+
+private:
+    std::string createTabIndent(int level) const {
+        return std::string(level, '\t');
+    }
+
+    std::string valueToString(ITrpJsonValue* value, int indentLevel) const {
+        if (!value) return "null";
+
+        switch (value->getType()) {
+            case TRP_OBJECT:
+                return objectToString(static_cast<TrpJsonObject*>(value), indentLevel);
+            case TRP_ARRAY:
+                return arrayToString(static_cast<TrpJsonArray*>(value), indentLevel);
+            case TRP_STRING:
+                return "\"" + static_cast<TrpJsonString*>(value)->getValue() + "\"";
+            case TRP_NUMBER: {
+                std::ostringstream oss;
+                oss << static_cast<TrpJsonNumber*>(value)->getValue();
+                return oss.str();
+            }
+            case TRP_BOOL:
+                return static_cast<TrpJsonBool*>(value)->getValue() ? "true" : "false";
+            case TRP_NULL:
+                return "null";
+            default:
+                return "unknown";
+        }
+    }
+
+    std::string objectToString(TrpJsonObject* obj, int indentLevel) const {
+        std::ostringstream oss;
+        std::string indent = createTabIndent(indentLevel);
+        std::string nextIndent = createTabIndent(indentLevel + 1);
+
+        oss << "{\n";
+
+        JsonObjectMap::const_iterator it = obj->begin();
+        for (size_t i = 0; i < obj->size(); ++i) {
+            oss << nextIndent << "\"" << it->first << "\": ";
+            oss << valueToString(it->second, indentLevel + 1);
+            
+            if (i < obj->size() - 1) {
+                oss << ",";
+            }
+            oss << "\n";
+            ++it;
+        }
+
+        oss << indent << "}";
+        return oss.str();
+    }
+
+    std::string arrayToString(TrpJsonArray* arr, int indentLevel) const {
+        std::ostringstream oss;
+        std::string indent = createTabIndent(indentLevel);
+        std::string nextIndent = createTabIndent(indentLevel + 1);
+
+        oss << "[\n";
+
+        for (size_t i = 0; i < arr->size(); ++i) {
+            oss << nextIndent << valueToString(arr->at(i), indentLevel + 1);
+            
+            if (i < arr->size() - 1) {
+                oss << ",";
+            }
+            oss << "\n";
+        }
+
+        oss << indent << "]";
+        return oss.str();
+    }
 };
 
-// ============================================================================
-// GRAMMAR REFERENCE (from original lexer file)
-// ============================================================================
-// JSON Grammar:
-// value  → object | array | string | number | true | false | null
-// object → '{' (string ':' value (',' string ':' value)*)? '}'
-// array  → '[' (value (',' value)*)? ']'
+// =============================================================================
+// CONVENIENCE FUNCTIONS
+// =============================================================================
 
-#endif // TRPJSON_ALL_HPP
+// Quick parse function for string input
+inline ITrpJsonValue* parseJsonString(const std::string& jsonStr) {
+    // Create temporary file
+    std::ofstream temp("temp_json.tmp");
+    temp << jsonStr;
+    temp.close();
+    
+    // Parse from file
+    TrpJsonParser parser("temp_json.tmp");
+    if (parser.parse()) {
+        return parser.release();
+    }
+    
+    return NULL;
+}
+
+// Quick parse function for file input
+inline ITrpJsonValue* parseJsonFile(const std::string& filename) {
+    TrpJsonParser parser(filename);
+    if (parser.parse()) {
+        return parser.release();
+    }
+    
+    return NULL;
+}
+
+#endif // TRPJSON_HPP
