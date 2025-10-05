@@ -10,7 +10,7 @@ int main (int ac, char ** av) {
     TrpJsonParser parser(av[1]);
 
     if (!parser.parse()) {
-        std::cerr << "zaba" << std::endl;
+        std::cerr << "bad trip" << std::endl;
     }
 
     parser.prettyPrint();
@@ -25,10 +25,10 @@ int main (int ac, char ** av) {
     SchemaVec vec;
 
     vec.push_back(&str);
+    // vec[0]= &str;
     vec.push_back(&nbr);
 
-    arr.tuple(vec).uniq(true);
-
+    arr.tuple(vec).uniq(false);
     TrpValidatorContext ctx;
 
 
