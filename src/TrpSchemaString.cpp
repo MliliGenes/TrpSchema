@@ -1,16 +1,16 @@
 #include "../include/TrpSchemaString.hpp"
 
 
-TrpSchemaString::TrpSchemaString( void ) : has_max(false), has_min(false) {}
+TrpSchemaString::TrpSchemaString( void ) : has_min(false), has_max(false) {}
 
 TrpSchemaString& TrpSchemaString::min( size_t _min_len ) {
-    if (!has_min) has_min = true;
+    has_min = true;
     min_len = _min_len;
     return *this;
 }
 
 TrpSchemaString& TrpSchemaString::max( size_t _max_len ) {
-    if (!has_max) has_max = true;
+    has_max = true;
     max_len = _max_len;
     return *this;
 }
@@ -31,6 +31,7 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
     }
 
     TrpJsonString* str = static_cast<TrpJsonString*>(value);
+    
     if (has_max && str->getValue().size() > max_len) {
         ValidationError err;
 
@@ -59,5 +60,6 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         if ( !got_error ) got_error = true;
     }
 
+    if (got_error) return false;
     return true;
 }

@@ -1,6 +1,7 @@
 #include "include/TrpSchemaArray.hpp"
 #include "include/TrpSchemaString.hpp"
 #include "include/TrpSchemaNumber.hpp"
+#include "include/TrpSchemaNull.hpp"
 
 #include "lib/TrpJson.hpp"
 
@@ -18,24 +19,21 @@ int main (int ac, char ** av) {
     TrpSchemaArray arr;
 
     TrpSchemaString str;
-    str.max(2);
     TrpSchemaNumber nbr;
-    nbr.min(10);
+    TrpSchemaNull null;
 
     SchemaVec vec;
 
-    vec.push_back(&str);
-    // vec[0]= &str;
-    vec.push_back(&nbr);
+    vec.push_back(&str.max(10).min(5));
+    vec.push_back(&nbr.max(60).min(10));
+    vec.push_back(&null);
 
-    arr.tuple(vec).uniq(false);
+    arr.tuple(vec).uniq(true);
     TrpValidatorContext ctx;
-
 
     if (!arr.validate(parser.getAST(), ctx)) {
         ctx.printErrors();
     } else {
         std::cout << "good trip" << std::endl;
     }
-
-}
+}  

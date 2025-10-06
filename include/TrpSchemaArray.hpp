@@ -10,14 +10,15 @@ class TrpSchemaArray : public TrpSchema {
         SchemaVec _tuple;
 
         bool _uniq;
-        bool has_max, has_min;
+        bool has_max;
+        bool has_min;
         size_t max_items, min_items;
 
     public:
         TrpSchemaArray();
 
         TrpSchemaArray& item( TrpSchema* _schema );
-        TrpSchemaArray& tuple( SchemaVec _schema );
+        TrpSchemaArray& tuple( SchemaVec& _schema );
 
         TrpSchemaArray& min(size_t min);
         TrpSchemaArray& max(size_t max);

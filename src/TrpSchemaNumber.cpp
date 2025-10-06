@@ -1,6 +1,6 @@
 #include "../include/TrpSchemaNumber.hpp"
 
-TrpSchemaNumber::TrpSchemaNumber() : has_max(false), has_min(false) {}
+TrpSchemaNumber::TrpSchemaNumber() : has_min(false), has_max(false) {}
 
 TrpSchemaNumber& TrpSchemaNumber::min( size_t _min_value ) {
     if ( !has_min ) has_min = true;
@@ -14,6 +14,13 @@ TrpSchemaNumber& TrpSchemaNumber::max( size_t _max_value ) {
 
     max_value = _max_value;
     return *this;
+}
+
+static std::string intToString( int nbr ) {
+    std::stringstream oss;
+    oss << nbr;
+
+    return oss.str();
 }
 
 bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
@@ -37,9 +44,9 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ValidationError err;
 
         err.path = ctx.getCurrentPath();
-        err.msg = "Number exceeds maximum value";
+        err.msg = "Number exceeds maximum value of " + intToString(max_value);
         err.expected = SCHEMA_NUMBER;
-        err.actual = value->getType();
+        err.actual = nbr->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;
@@ -49,9 +56,9 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ValidationError err;
 
         err.path = ctx.getCurrentPath();
-        err.msg = "Number is below minimum value";
+        err.msg = "Number is below minimum value of " + intToString(min_value);
         err.expected = SCHEMA_NUMBER;
-        err.actual = value->getType();
+        err.actual = nbr->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;

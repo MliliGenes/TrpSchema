@@ -32,7 +32,7 @@ const TrpValidationError& TrpValidatorContext::getErrors( void ) const {
 
 bool TrpValidatorContext::printErrors( void ) const {
     bool got_errors = !errors.empty();
-    for (int i = 0; i < errors.size(); i++) {
+    for (size_t i = 0; i < errors.size(); i++) {
         std::cerr
             << errors[i].path
             << ": "

@@ -1,10 +1,10 @@
+// Add at the very beginning of lib/TrpJson.hpp, right after the include guard
 #ifndef TRPJSON_HPP
 #define TRPJSON_HPP
 
 // =============================================================================
 // ANSI COLOR CODES FOR TERMINAL OUTPUT
 // =============================================================================
-
 #define RESET          "\033[0m"
 #define STRING_COLOR   "\033[31m"      // Red for strings
 #define NUMBER_COLOR   "\033[33m"      // Yellow for numbers  
@@ -147,9 +147,9 @@ public:
 
 class ITrpJsonValue {
 public:
-    ITrpJsonValue();
-    virtual ~ITrpJsonValue();
-    virtual TrpJsonType getType() const = 0;
+    ITrpJsonValue( void ) {}
+    virtual ~ITrpJsonValue( void ) = 0;
+    virtual TrpJsonType getType( void ) const = 0;
 };
 
 // =============================================================================
@@ -192,7 +192,7 @@ private:
     std::string m_value;
 
 public:
-    explicit TrpJsonString(const std::string& value);
+    TrpJsonString(const std::string& value) : m_value(value) {}
     ~TrpJsonString();
     TrpJsonType getType() const;
     const std::string& getValue() const;
@@ -204,10 +204,10 @@ private:
     double m_value;
 
 public:
-    explicit TrpJsonNumber(double value);
+    TrpJsonNumber(double value) : m_value(value) {}
     ~TrpJsonNumber();
     TrpJsonType getType() const;
-    double getValue() const;
+    const double& getValue() const;
 };
 
 // JSON Boolean Class
@@ -216,17 +216,15 @@ private:
     bool m_value;
 
 public:
-    explicit TrpJsonBool(bool value);
+    TrpJsonBool(bool value) : m_value(value) {}
     ~TrpJsonBool();
     TrpJsonType getType() const;
-    bool getValue() const;
+    const bool& getValue() const;
 };
 
 // JSON Null Class
 class TrpJsonNull : public ITrpJsonValue {
 public:
-    TrpJsonNull();
-    ~TrpJsonNull();
     TrpJsonType getType() const;
 };
 
@@ -263,7 +261,6 @@ public:
     TrpJsonLexer(std::string file_name);
     ~TrpJsonLexer();
     token getNextToken();
-    bool isOpen() const;
     const std::string getFileName() const;
     void reset();
 };

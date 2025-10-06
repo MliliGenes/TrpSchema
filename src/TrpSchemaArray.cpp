@@ -1,7 +1,8 @@
 #include "../include/TrpSchemaArray.hpp"
 
 
-TrpSchemaArray::TrpSchemaArray( void ) : has_max(false), has_min(false), _item(NULL), _uniq(false) {}
+TrpSchemaArray::TrpSchemaArray( void ) : _item(NULL), _uniq(false),
+    has_max(false), has_min(false) {}
 
 TrpSchemaArray& TrpSchemaArray::min(size_t min) {
     if (!has_min) has_min = true;
@@ -26,13 +27,13 @@ TrpSchemaArray& TrpSchemaArray::uniq(bool uniq) {
     return *this;
 }
 
-TrpSchemaArray& TrpSchemaArray::tuple( SchemaVec _schema_vec ) {
+TrpSchemaArray& TrpSchemaArray::tuple( SchemaVec& _schema_vec ) {
     if (_schema_vec.empty()) return *this;
     _tuple = _schema_vec;
     return *this;
 }
 
-std::string intToString( int nbr ) {
+static std::string intToString( int nbr ) {
     std::stringstream oss;
     oss << nbr;
 
@@ -84,7 +85,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( _item ) {
-        for ( int i = 0; i < arr->size(); i++ ) {
+        for ( size_t i = 0; i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_item->validate( arr->at(i), ctx ) ) {
                 if ( !got_error ) got_error = true;
@@ -94,10 +95,9 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( !_tuple.empty() ) {
-        for ( int i = 0; i < _tuple.size(); i++ ) {
+        for ( size_t i = 0; i < _tuple.size() && i < arr->size(); i++ ) {
             ctx.pushPath("[" + intToString(i) + "]");
             if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
-                ctx.popPath();
                 if ( !got_error ) got_error = true;
             }
             ctx.popPath();
@@ -110,7 +110,7 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         std::set<bool> bool_bucket;
         bool null_found = false;
 
-        for ( int i = 0; i < arr->size(); i++ ) {
+        for ( size_t i = 0; i < arr->size(); i++ ) {
             ITrpJsonValue* element = arr->at(i);
             bool is_duplicate = false;
 
