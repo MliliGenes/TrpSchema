@@ -1,4 +1,3 @@
-// Add at the very beginning of lib/TrpJson.hpp, right after the include guard
 #ifndef TRPJSON_HPP
 #define TRPJSON_HPP
 

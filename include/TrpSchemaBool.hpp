@@ -3,9 +3,7 @@
 #include "TrpSchema.hpp"
 
 class TrpSchemaBool : public TrpSchema {
-    private:
     public:
-        TrpSchemaBool(/* args */);
-        ~TrpSchemaBool();
+        bool validate( ITrpJsonValue* value, TrpValidatorContext& ctx ) const;
+        TrpSchemaType getType( void ) const { return SCHEMA_OBJECT; }
 };
-
