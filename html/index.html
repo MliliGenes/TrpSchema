@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrpJSON Parser - C++98 JSON Parser</title>
+    <title>TrpSchema - C++98 JSON Schema Validator</title>
     
     <!-- CDN Libraries -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -16,28 +16,28 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>TrpJSON Parser</h1>
+                <h1>TrpSchema</h1>
                 <p class="subtitle">
-                    A high-performance, C++98-compatible JSON parser with colorized output, 
-                    comprehensive error handling, and memory-safe design.
+                    A powerful JSON schema validation library for C++98 with a fluent, chainable API.
+                    Built on top of TrpJSON for enterprise-grade validation.
                 </p>
                 
                 <div class="badges">
                     <span class="badge">C++98 Compatible</span>
+                    <span class="badge">Fluent API</span>
+                    <span class="badge">Path-Based Errors</span>
+                    <span class="badge">Factory Pattern</span>
                     <span class="badge">Memory Safe</span>
-                    <span class="badge">Zero Dependencies</span>
-                    <span class="badge">Colorized Output</span>
-                    <span class="badge">High Performance</span>
                 </div>
                 
                 <div class="cta-buttons">
-                    <a href="https://github.com/MliliGenes/TrpJSON" class="btn btn-primary">
+                    <a href="https://github.com/MliliGenes/TrpSchema" class="btn btn-primary">
                         <i class="fab fa-github"></i>
                         View on GitHub
                     </a>
                     <a href="#demo" class="btn btn-secondary">
-                        <i class="fas fa-play-circle"></i>
-                        Try Demo
+                        <i class="fas fa-check-circle"></i>
+                        See Validation
                     </a>
                 </div>
             </div>
@@ -49,56 +49,56 @@
         <div class="container">
             <h2 class="section-title">Powerful Features</h2>
             <p class="section-subtitle">
-                Built for reliability, performance, and ease of use in C++98 environments
+                Built for reliability, precision, and ease of use in C++98 environments
             </p>
             
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-bullseye"></i>
+                        <i class="fas fa-link"></i>
                     </div>
-                    <h3 class="feature-title">C++98 Compatible</h3>
-                    <p class="feature-description">Works seamlessly with legacy systems and older compilers. No modern C++ features required.</p>
+                    <h3 class="feature-title">Fluent API</h3>
+                    <p class="feature-description">Intuitive chainable method calls for building complex schemas with minimal code.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-palette"></i>
+                        <i class="fas fa-route"></i>
                     </div>
-                    <h3 class="feature-title">Colorized Output</h3>
-                    <p class="feature-description">Beautiful ANSI color-coded JSON visualization with syntax highlighting for better readability.</p>
+                    <h3 class="feature-title">Path-Based Errors</h3>
+                    <p class="feature-description">Precise error reporting with JSON path tracking (e.g., .user.email, .arr[0]) for easy debugging.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-search"></i>
+                        <i class="fas fa-shapes"></i>
                     </div>
-                    <h3 class="feature-title">Error Detection</h3>
-                    <p class="feature-description">Comprehensive error handling with detailed messages including line and column information.</p>
+                    <h3 class="feature-title">All JSON Types</h3>
+                    <p class="feature-description">Complete validation support for objects, arrays, strings, numbers, booleans, and null values.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-ruler"></i>
+                    </div>
+                    <h3 class="feature-title">Constraint Validation</h3>
+                    <p class="feature-description">Min/max constraints for strings, numbers, arrays, and objects with unique item validation.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="feature-title">Nested Schemas</h3>
+                    <p class="feature-description">Deep validation of complex nested structures with object properties and array items.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3 class="feature-title">Memory Safe</h3>
-                    <p class="feature-description">Custom AutoPointer implementation prevents memory leaks and ensures safe resource management.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3 class="feature-title">High Performance</h3>
-                    <p class="feature-description">Single-pass parsing with minimal memory allocation for maximum efficiency.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3 class="feature-title">Pretty Printing</h3>
-                    <p class="feature-description">Formatted JSON output with proper indentation and structure visualization.</p>
+                    <h3 class="feature-title">Factory Pattern</h3>
+                    <p class="feature-description">Automatic memory management through factory-allocated schemas with RAII cleanup.</p>
                 </div>
             </div>
         </div>
@@ -109,30 +109,85 @@
         <div class="container">
             <h2 class="section-title">Clean Architecture</h2>
             <p class="section-subtitle">
-                Recursive descent parser with polymorphic value hierarchy
+                Factory-based schema construction with validation context
             </p>
             
             <div class="demo-panel">
                 <div class="demo-header">
-                    <i class="fas fa-code-branch"></i>
+                    <i class="fas fa-sitemap"></i>
                     Component Structure
                 </div>
                 <div class="demo-content">
-                    <pre class="cm-s-material-palenight"><code>TrpJSON Parser
+                    <pre class="cm-s-material-palenight"><code>TrpSchema Validator
 ├── Core Components
-│   ├── TrpJsonLexer     - Tokenization and lexical analysis
-│   └── TrpJsonParser    - Recursive descent parser
-├── Value Types
-│   ├── ITrpJsonValue    - Base interface for all JSON values
-│   ├── TrpJsonObject    - JSON objects (key-value pairs)
-│   ├── TrpJsonArray     - JSON arrays (ordered lists)
-│   ├── TrpJsonString    - JSON strings
-│   ├── TrpJsonNumber    - JSON numbers (integers and floats)
-│   ├── TrpJsonBool      - JSON booleans
-│   └── TrpJsonNull      - JSON null values
-└── Utilities
-    ├── AutoPointer      - Memory management
-    └── AstToString      - Colorized serialization</code></pre>
+│   ├── TrpSchema             - Base interface for all schemas
+│   ├── TrpSchemaFactory      - Factory for schema creation
+│   └── TrpValidatorContext   - Error collection with path tracking
+├── Schema Types
+│   ├── TrpSchemaObject       - Object validation with properties
+│   ├── TrpSchemaArray        - Array validation with items/tuple
+│   ├── TrpSchemaString       - String validation with length
+│   ├── TrpSchemaNumber       - Number validation with min/max
+│   ├── TrpSchemaBool         - Boolean validation
+│   └── TrpSchemaNull         - Null validation
+└── Validation
+    ├── ValidationError       - Error structure (path, message)
+    └── Path Tracking         - Hierarchical error reporting</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">
+                Build and validate schemas with a fluent, chainable API
+            </p>
+            
+            <div class="demo-panel">
+                <div class="demo-header">
+                    <i class="fas fa-code"></i>
+                    Basic Usage Example
+                </div>
+                <div class="demo-content">
+                    <pre class="cm-s-material-palenight language-cpp"><code>#include "TrpSchema.hpp"
+#include &lt;iostream&gt;
+
+int main(int argc, char** argv) {
+    // Parse JSON file
+    TrpJsonParser parser(argv[1]);
+    if (!parser.parse()) {
+        std::cerr << "Failed to parse JSON" << std::endl;
+        return 1;
+    }
+    
+    // Create schema using factory
+    TrpSchemaFactory factory;
+    
+    TrpSchemaObject& schema = factory.object()
+        .property("name", &factory.string().min(1).max(50))
+        .property("age", &factory.number().min(0).max(150))
+        .property("email", &factory.string().min(5))
+        .property("tags", &factory.array()
+            .item(&factory.string())
+            .uniq(true)
+        )
+        .required("name")
+        .required("email");
+    
+    // Validate
+    TrpValidatorContext ctx;
+    if (!schema.validate(parser.getAST(), ctx)) {
+        std::cerr << "Validation Errors:" << std::endl;
+        ctx.printErrors();
+        return 1;
+    }
+    
+    std::cout << "Validation successful!" << std::endl;
+    return 0;
+}</code></pre>
                 </div>
             </div>
         </div>
@@ -141,183 +196,262 @@
     <!-- Demo Section -->
     <section class="section" id="demo">
         <div class="container">
-            <h2 class="section-title">Live Demo</h2>
+            <h2 class="section-title">Live Validation Demo</h2>
             <p class="section-subtitle">
-                See the parser in action with colorized output
+                See schema validation in action with detailed error reporting
             </p>
             
             <div class="demo-container">
                 <div class="demo-panel">
                     <div class="demo-header">
+                        <i class="fas fa-file-code"></i>
+                        Schema Definition
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-cpp"><code>TrpSchemaFactory factory;
+
+TrpSchemaObject& userSchema = factory.object()
+    .property("id", &factory.number().min(1))
+    .property("username", &factory.string().min(3).max(20))
+    .property("email", &factory.string().min(5))
+    .property("age", &factory.number().min(13).max(120))
+    .property("verified", &factory.boolean())
+    .property("profile", &factory.object()
+        .property("bio", &factory.string().max(500))
+        .property("avatar", &factory.string())
+        .property("social", &factory.array()
+            .item(&factory.string())
+            .min(0)
+            .max(5)
+        )
+    )
+    .property("permissions", &factory.array()
+        .item(&factory.string())
+        .uniq(true)
+    )
+    .required("id")
+    .required("username")
+    .required("email");</code></pre>
+                    </div>
+                </div>
+
+                <div class="demo-panel">
+                    <div class="demo-header">
                         <i class="fas fa-file-alt"></i>
-                        Input JSON - Web Server Configuration
+                        Valid JSON Input
                     </div>
                     <div class="demo-content">
                         <pre class="cm-s-material-palenight language-json"><code>{
-  "non": false,
-  "routes": [
-    {
-      "autoindex": false,
-      "index": "index.html",
-      "path": "/",
-      "root": "/var/www/html"
-    },
-    {
-      "methods": ["GET", "POST"],
-      "path": "/api",
-      "proxy_pass": "http://127.0.0.1:5000"
-    },
-    {
-      "cache_control": "max-age=86400",
-      "path": "/static",
-      "root": "/var/www/static"
-    }
-  ],
-  "security": {
-    "cors": {
-      "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
-      "allowed_origins": ["*"],
-      "enabled": true
-    },
-    "rate_limit": {
-      "ban_time_minutes": 15,
-      "requests_per_minute": 60
-    }
+  "id": 1001,
+  "username": "john_doe",
+  "email": "john@example.com",
+  "age": 28,
+  "verified": true,
+  "profile": {
+    "bio": "Software developer and open source enthusiast",
+    "avatar": "https://example.com/avatar.jpg",
+    "social": ["twitter", "github", "linkedin"]
   },
-  "server": {
-    "host": "0.0.0.0",
-    "logging": {
-      "access_log": "/var/log/webserver/access.log",
-      "error_log": "/var/log/webserver/error.log",
-      "log_level": "info"
-    },
-    "port": 8080,
-    "ssl": {
-      "certificate": "/etc/ssl/certs/server.crt",
-      "enabled": true,
-      "key": "/etc/ssl/private/server.key"
-    }
-  },
-  "timeouts": {
-    "client_body_timeout": 60,
-    "client_header_timeout": 30,
-    "keepalive_timeout": 65
-  }
+  "permissions": ["read", "write", "execute"]
 }</code></pre>
                     </div>
                 </div>
-                
+
+                <div class="demo-panel success-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-check-circle"></i>
+                        Validation Result: Success
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight"><code><span style="color: #22c55e;">✓ Validation successful!</span>
+<span style="color: #6b7280;">All schema constraints satisfied.</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-container" style="margin-top: 2rem;">
                 <div class="demo-panel">
                     <div class="demo-header">
-                        <i class="fas fa-palette"></i>
-                        TrpJSON Colorized Output
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Invalid JSON Input
                     </div>
-                    <div class="demo-content cm-s-material-palenight json-output">
-                        <pre><code><span class="json-punct">{</span>
-        <span class="json-key">"non"</span><span class="json-punct">:</span> <span class="json-boolean">false</span><span class="json-punct">,</span>
-        <span class="json-key">"routes"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
-                <span class="json-punct">{</span>
-                        <span class="json-key">"autoindex"</span><span class="json-punct">:</span> <span class="json-boolean">false</span><span class="json-punct">,</span>
-                        <span class="json-key">"index"</span><span class="json-punct">:</span> <span class="json-string">"index.html"</span><span class="json-punct">,</span>
-                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/"</span><span class="json-punct">,</span>
-                        <span class="json-key">"root"</span><span class="json-punct">:</span> <span class="json-string">"/var/www/html"</span>
-                <span class="json-punct">}</span><span class="json-punct">,</span>
-                <span class="json-punct">{</span>
-                        <span class="json-key">"methods"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
-                                <span class="json-string">"GET"</span><span class="json-punct">,</span>
-                                <span class="json-string">"POST"</span>
-                        <span class="json-punct">]</span><span class="json-punct">,</span>
-                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/api"</span><span class="json-punct">,</span>
-                        <span class="json-key">"proxy_pass"</span><span class="json-punct">:</span> <span class="json-string">"http://127.0.0.1:5000"</span>
-                <span class="json-punct">}</span><span class="json-punct">,</span>
-                <span class="json-punct">{</span>
-                        <span class="json-key">"cache_control"</span><span class="json-punct">:</span> <span class="json-string">"max-age=86400"</span><span class="json-punct">,</span>
-                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/static"</span><span class="json-punct">,</span>
-                        <span class="json-key">"root"</span><span class="json-punct">:</span> <span class="json-string">"/var/www/static"</span>
-                <span class="json-punct">}</span>
-        <span class="json-punct">]</span><span class="json-punct">,</span>
-        <span class="json-key">"security"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                <span class="json-key">"cors"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                        <span class="json-key">"allowed_methods"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
-                                <span class="json-string">"GET"</span><span class="json-punct">,</span>
-                                <span class="json-string">"POST"</span><span class="json-punct">,</span>
-                                <span class="json-string">"PUT"</span><span class="json-punct">,</span>
-                                <span class="json-string">"DELETE"</span>
-                        <span class="json-punct">]</span><span class="json-punct">,</span>
-                        <span class="json-key">"allowed_origins"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
-                                <span class="json-string">"*"</span>
-                        <span class="json-punct">]</span><span class="json-punct">,</span>
-                        <span class="json-key">"enabled"</span><span class="json-punct">:</span> <span class="json-boolean">true</span>
-                <span class="json-punct">}</span><span class="json-punct">,</span>
-                <span class="json-key">"rate_limit"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                        <span class="json-key">"ban_time_minutes"</span><span class="json-punct">:</span> <span class="json-number">15</span><span class="json-punct">,</span>
-                        <span class="json-key">"requests_per_minute"</span><span class="json-punct">:</span> <span class="json-number">60</span>
-                <span class="json-punct">}</span>
-        <span class="json-punct">}</span><span class="json-punct">,</span>
-        <span class="json-key">"server"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                <span class="json-key">"host"</span><span class="json-punct">:</span> <span class="json-string">"0.0.0.0"</span><span class="json-punct">,</span>
-                <span class="json-key">"logging"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                        <span class="json-key">"access_log"</span><span class="json-punct">:</span> <span class="json-string">"/var/log/webserver/access.log"</span><span class="json-punct">,</span>
-                        <span class="json-key">"error_log"</span><span class="json-punct">:</span> <span class="json-string">"/var/log/webserver/error.log"</span><span class="json-punct">,</span>
-                        <span class="json-key">"log_level"</span><span class="json-punct">:</span> <span class="json-string">"info"</span>
-                <span class="json-punct">}</span><span class="json-punct">,</span>
-                <span class="json-key">"port"</span><span class="json-punct">:</span> <span class="json-number">8080</span><span class="json-punct">,</span>
-                <span class="json-key">"ssl"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                        <span class="json-key">"certificate"</span><span class="json-punct">:</span> <span class="json-string">"/etc/ssl/certs/server.crt"</span><span class="json-punct">,</span>
-                        <span class="json-key">"enabled"</span><span class="json-punct">:</span> <span class="json-boolean">true</span><span class="json-punct">,</span>
-                        <span class="json-key">"key"</span><span class="json-punct">:</span> <span class="json-string">"/etc/ssl/private/server.key"</span>
-                <span class="json-punct">}</span>
-        <span class="json-punct">}</span><span class="json-punct">,</span>
-        <span class="json-key">"timeouts"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
-                <span class="json-key">"client_body_timeout"</span><span class="json-punct">:</span> <span class="json-number">60</span><span class="json-punct">,</span>
-                <span class="json-key">"client_header_timeout"</span><span class="json-punct">:</span> <span class="json-number">30</span><span class="json-punct">,</span>
-                <span class="json-key">"keepalive_timeout"</span><span class="json-punct">:</span> <span class="json-number">65</span>
-        <span class="json-punct">}</span>
-<span class="json-punct">}</span></code></pre>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-json"><code>{
+  "id": 0,
+  "username": "ab",
+  "age": 150,
+  "verified": true,
+  "profile": {
+    "bio": "Software developer",
+    "social": ["twitter", "github", "linkedin", "twitter"]
+  },
+  "permissions": ["read", "write", "read"]
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="demo-panel error-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-times-circle"></i>
+                        Validation Errors
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight"><code><span style="color: #ef4444;">✗ Validation failed with 6 errors:</span>
+
+<span style="color: #f59e0b;">.id</span>: Number is below minimum value of 1
+<span style="color: #f59e0b;">.username</span>: String length is below minimum of 3
+<span style="color: #f59e0b;">.email</span>: Required property 'email' is missing
+<span style="color: #f59e0b;">.age</span>: Number exceeds maximum value of 120
+<span style="color: #f59e0b;">.profile.social</span>: Duplicate item found, items must be unique
+<span style="color: #f59e0b;">.permissions</span>: Duplicate item found, items must be unique</code></pre>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Performance Section -->
+    <!-- Schema Types Section -->
     <section class="section">
         <div class="container">
-            <h2 class="section-title">Performance Benchmarks</h2>
+            <h2 class="section-title">Schema Types & Validation</h2>
             <p class="section-subtitle">
-                Tested on Intel i7-10700K, 32GB RAM, GCC 9.4.0, Ubuntu 20.04
+                Comprehensive validation for all JSON data types
             </p>
             
-            <div class="benchmark-grid">
-                <div class="benchmark-card">
-                    <div class="benchmark-value">0.12ms</div>
-                    <div class="benchmark-label">Simple Config (1KB)</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 15%"></div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3 class="feature-title">Object</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.object()
+  .property("key", schema)
+  .required("key")
+  .min(1).max(10)</code></pre>
                     </div>
                 </div>
                 
-                <div class="benchmark-card">
-                    <div class="benchmark-value">2.8ms</div>
-                    <div class="benchmark-label">API Response (50KB)</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 35%"></div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h3 class="feature-title">Array</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.array()
+  .item(schema)
+  .min(1).max(100)
+  .uniq(true)</code></pre>
                     </div>
                 </div>
                 
-                <div class="benchmark-card">
-                    <div class="benchmark-value">48ms</div>
-                    <div class="benchmark-label">Large Dataset (1MB)</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-font"></i>
+                    </div>
+                    <h3 class="feature-title">String</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.string()
+  .min(1)
+  .max(255)</code></pre>
                     </div>
                 </div>
                 
-                <div class="benchmark-card">
-                    <div class="benchmark-value">5.2ms</div>
-                    <div class="benchmark-label">Complex Nested (100KB)</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 42%"></div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <h3 class="feature-title">Number</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.number()
+  .min(0)
+  .max(1000)</code></pre>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-square"></i>
+                    </div>
+                    <h3 class="feature-title">Boolean</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.boolean()</code></pre>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <h3 class="feature-title">Null</h3>
+                    <div class="feature-code">
+                        <pre><code>factory.null()</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Installation & Building</h2>
+            <p class="section-subtitle">
+                Get started with TrpSchema in minutes
+            </p>
+            
+            <div class="demo-container">
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-download"></i>
+                        Prerequisites
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-bash"><code># Install TrpJSON first
+git clone https://github.com/MliliGenes/TrpJSON
+cd TrpJSON
+make lib
+sudo make install
+
+# Then clone TrpSchema
+git clone https://github.com/MliliGenes/TrpSchema
+cd TrpSchema</code></pre>
+                    </div>
+                </div>
+
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-hammer"></i>
+                        Build Commands
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-bash"><code># Build static library
+make lib
+
+# Build main executable
+make
+
+# Install system-wide
+sudo make install
+
+# Clean build artifacts
+make fclean</code></pre>
+                    </div>
+                </div>
+
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-link"></i>
+                        Link with Your Project
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-bash"><code># If installed system-wide
+g++ -std=c++98 -o myapp myapp.cpp -ltrpschema -ltrpjson
+
+# If using locally
+g++ -std=c++98 -Iinclude -Ilib \
+    -o myapp myapp.cpp \
+    -Llib -ltrpschema -ltrpjson</code></pre>
                     </div>
                 </div>
             </div>
@@ -327,180 +461,42 @@
     <!-- Use Cases Section -->
     <section class="section">
         <div class="container">
-            <h2 class="section-title">Real-World Use Cases</h2>
+            <h2 class="section-title">Use Cases</h2>
             <p class="section-subtitle">
-                Perfect for configuration files, API processing, and data pipelines
+                Perfect for configuration validation, API request validation, and more
             </p>
             
-            <div class="use-cases">
-                <div class="use-case">
-                    <div class="use-case-header">
-                        <i class="fas fa-cogs"></i>
-                        <div>
-                            <h3 class="use-case-title">Configuration Files</h3>
-                            <p class="use-case-description">Parse complex application configuration with nested structures</p>
-                        </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cog"></i>
                     </div>
-                    <div class="use-case-content">
-                        <p>Handle multi-level configuration files with database settings, feature flags, and environment-specific parameters.</p>
-                        <pre class="cm-s-material-palenight language-json"><code>{
-  "database": {
-    "pools": [
-      {"name": "read", "size": 10},
-      {"name": "write", "size": 5}
-    ]
-  },
-  "logging": {"level": "info"}
-}</code></pre>
-                    </div>
+                    <h3 class="feature-title">Configuration Files</h3>
+                    <p class="feature-description">Validate application config files with strict type checking and required fields.</p>
                 </div>
                 
-                <div class="use-case">
-                    <div class="use-case-header">
-                        <i class="fas fa-globe"></i>
-                        <div>
-                            <h3 class="use-case-title">API Processing</h3>
-                            <p class="use-case-description">Process REST API responses with proper error detection</p>
-                        </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-server"></i>
                     </div>
-                    <div class="use-case-content">
-                        <p>Handle API responses with pagination, user data, and complex nested objects efficiently.</p>
-                        <pre class="cm-s-material-palenight language-json"><code>{
-  "data": {
-    "users": [
-      {"id": 1, "active": true},
-      {"id": 2, "active": false}
-    ],
-    "pagination": {"total": 150}
-  }
-}</code></pre>
-                    </div>
+                    <h3 class="feature-title">API Validation</h3>
+                    <p class="feature-description">Validate incoming API requests and responses against defined schemas.</p>
                 </div>
                 
-                <div class="use-case">
-                    <div class="use-case-header">
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="fas fa-database"></i>
-                        <div>
-                            <h3 class="use-case-title">Data Pipelines</h3>
-                            <p class="use-case-description">Process large JSON datasets in streaming applications</p>
-                        </div>
                     </div>
-                    <div class="use-case-content">
-                        <p>Efficiently process large datasets with minimal memory usage and high throughput.</p>
-                        <pre class="cm-s-material-palenight language-cpp"><code>// Process each record efficiently
-TrpJsonParser parser("dataset.json");
-auto root = parser.parse();
-
-for (size_t i = 0; i < records->size(); ++i) {
-    processRecord(records->at(i));
-}</code></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="section stats-section">
-        <div class="container">
-            <h2 class="section-title">Performance Stats</h2>
-            <p class="section-subtitle">Optimized for speed and memory efficiency</p>
-            
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">20MB/s</div>
-                    <div class="stat-label">Processing Speed</div>
+                    <h3 class="feature-title">Data Migration</h3>
+                    <p class="feature-description">Ensure data integrity during migrations with comprehensive validation.</p>
                 </div>
                 
-                <div class="stat-item">
-                    <div class="stat-number">~2x</div>
-                    <div class="stat-label">Memory Efficiency</div>
-                </div>
-                
-                <div class="stat-item">
-                    <div class="stat-number">O(n)</div>
-                    <div class="stat-label">Time Complexity</div>
-                </div>
-                
-                <div class="stat-item">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Memory Leaks</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Start Section -->
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Quick Start</h2>
-            <p class="section-subtitle">Get up and running in seconds</p>
-            
-            <div class="demo-container">
-                <div class="demo-panel">
-                    <div class="demo-header">
-                        <i class="fas fa-hammer"></i>
-                        Build Instructions
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-vial"></i>
                     </div>
-                    <div class="demo-content">
-                        <pre class="cm-s-material-palenight language-bash"><code># Clone the repository
-git clone https://github.com/MliliGenes/TrpJSON.git
-cd TrpJSON
-
-# Build using make
-make
-
-# Or build manually
-g++ -Wall -Wextra -std=c++98 -Iinclude \
-    -o TrpJSON main.cpp src/**/*.cpp</code></pre>
-                    </div>
-                </div>
-                
-                <div class="demo-panel">
-                    <div class="demo-header">
-                        <i class="fas fa-laptop-code"></i>
-                        Usage Example
-                    </div>
-                    <div class="demo-content">
-                        <pre class="cm-s-material-palenight language-cpp"><code>#include "TrpJsonParser.hpp"
-
-int main() {
-    TrpJsonParser parser("config.json");
-    auto root = parser.parse();
-    
-    if (root.get() != NULL) {
-        std::cout << astValueToString(root.get());
-    }
-    
-    return 0;
-}</code></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Credits Section -->
-    <section class="section credits-section">
-        <div class="container">
-            <h2 class="section-title" style="margin-bottom: 2rem; color: hsl(var(--secondary-foreground));">Created by</h2>
-            
-            <div class="credits-content">
-                <img id="github-avatar" alt="sel-mlil" class="credits-avatar">
-                <div class="credits-info">
-                    <h3 class="credits-name">sel-mlil</h3>
-                    <p class="credits-role">Software Developer</p>
-                    
-                    <div class="credits-links">
-                        <a href="https://github.com/MliliGenes" class="btn btn-secondary">
-                            <i class="fab fa-github"></i>
-                            GitHub Profile
-                        </a>
-                        <a href="https://profile.intra.42.fr/users/sel-mlil" class="btn btn-secondary">
-                            <i class="fas fa-graduation-cap"></i>
-                            42 Network
-                        </a>
-                    </div>
+                    <h3 class="feature-title">Testing</h3>
+                    <p class="feature-description">Validate test fixtures and mock data in your test suites.</p>
                 </div>
             </div>
         </div>
@@ -510,26 +506,26 @@ int main() {
     <footer class="footer">
         <div class="container">
             <div class="footer-links">
-                <a href="https://github.com/MliliGenes/TrpJSON" class="footer-link">
+                <a href="https://github.com/MliliGenes/TrpSchema" class="footer-link">
                     <i class="fab fa-github"></i>
                     GitHub Repository
                 </a>
-                <a href="https://github.com/MliliGenes/TrpJSON/blob/main/README.md" class="footer-link">
+                <a href="https://github.com/MliliGenes/TrpSchema/blob/main/README.md" class="footer-link">
                     <i class="fas fa-book"></i>
                     Documentation
                 </a>
-                <a href="https://github.com/MliliGenes/TrpJSON/issues" class="footer-link">
+                <a href="https://github.com/MliliGenes/TrpSchema/issues" class="footer-link">
                     <i class="fas fa-bug"></i>
                     Issues
                 </a>
-                <a href="https://github.com/MliliGenes/TrpJSON/blob/main/LICENSE" class="footer-link">
+                <a href="https://github.com/MliliGenes/TrpSchema/blob/main/LICENSE" class="footer-link">
                     <i class="fas fa-file-alt"></i>
                     License
                 </a>
             </div>
             
-            <p>&copy; 2025 TrpJSON Parser by <strong>sel-mlil</strong>. Licensed under MIT License.</p>
-            <p style="margin-top: 0.5rem; color: hsl(var(--muted-foreground));">Making JSON parsing simple, safe, and beautiful in C++98!</p>
+            <p>&copy; 2025 TrpSchema by <strong>MliliGenes</strong>. Licensed under MIT License.</p>
+            <p style="margin-top: 0.5rem; color: hsl(var(--muted-foreground));">Making JSON validation simple, safe, and beautiful in C++98!</p>
         </div>
     </footer>
 
