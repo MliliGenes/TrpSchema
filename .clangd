@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - -std=c++98
+    - -Wall
+    - -Wextra
+    - -ggdb
+    - -Iinclude
+
+Diagnostics:
+  ClangTidy:
+    Remove:
+      - modernize-*

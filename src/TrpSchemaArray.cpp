@@ -91,12 +91,21 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
     }
 
     if ( !_tuple.empty() ) {
-        for ( size_t i = 0; i < _tuple.size() && i < arr->size(); i++ ) {
-            ctx.pushPath("[" + intToString(i) + "]");
-            if ( !_tuple[i]->validate(arr->at(i), ctx) ) {
-                if ( !got_error ) got_error = true;
+        if (arr->size() != _tuple.size()) {
+            ValidationError err;
+            err.path = ctx.getCurrentPath();
+            err.msg = "Tuple array must have exactly " + intToString(_tuple.size()) + 
+                    " items, but has " + intToString(arr->size());
+            ctx.pushError(err);
+            if ( !got_error ) got_error = true;
+        } else {
+            for ( size_t i = 0; i < _tuple.size() && i < arr->size(); i++ ) {
+                ctx.pushPath("[" + intToString(i) + "]");
+                if ( !_tuple[i] || !_tuple[i]->validate(arr->at(i), ctx) ) {
+                    if ( !got_error ) got_error = true;
+                }
+                ctx.popPath();
             }
-            ctx.popPath();
         }
     }
 

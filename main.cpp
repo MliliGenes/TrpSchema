@@ -1,67 +1,36 @@
-#include "include/TrpSchemaArray.hpp"
-#include "include/TrpSchemaObject.hpp"
-#include "include/TrpSchemaString.hpp"
-#include "include/TrpSchemaNumber.hpp"
-#include "include/TrpSchemaNull.hpp"
-#include "include/TrpSchemaBool.hpp"
-
-#include "lib/TrpJson.hpp"
-
+#include "lib/TrpSchema.hpp"
 
 int main (int ac, char ** av) {
     if (ac != 2) return 1;
     TrpJsonParser parser(av[1]);
 
     if (!parser.parse()) {
-        std::cerr << "bad trip" << std::endl;
+        std::cerr << "bad trip: Failed to parse JSON file." << std::endl;
+        return 1;
     }
 
     parser.prettyPrint();
 
-    TrpSchemaObject obj;
-    TrpSchemaArray arr;
+    TrpSchemaFactory factory;
 
-    TrpSchemaString str;
-    TrpSchemaNumber nbr;
-    TrpSchemaBool bol;
-    TrpSchemaNull null;
-
-    SchemaVec vec;
-
-    vec.push_back(&str.max(50).min(5));
-    vec.push_back(&nbr.max(60).min(0));
-   vec.push_back(&bol);
-    vec.push_back(&null);
-
-    arr.tuple(vec).uniq(true);
-
-    // --- Webserver Schema ---
-    TrpSchemaObject webserverSchema;
-    TrpSchemaString hostSchema;
-    TrpSchemaNumber portSchema;
-    TrpSchemaBool httpsSchema;
-    TrpSchemaArray protocolsSchema;
-    TrpSchemaString protocolStringSchema;
-    TrpSchemaNumber timeoutSchema;
-
-    protocolsSchema.item(&protocolStringSchema).uniq(true).min(1);
-
-    webserverSchema.property("host", &hostSchema.min(1))
-                   .property("port", &portSchema.min(1024).max(65535))
-                   .property("enable_https", &httpsSchema)
-                   .property("supported_protocols", &protocolsSchema)
-                   .property("timeout", &timeoutSchema.min(0))
-                   .required("host")
-                   .required("port");
-    // --- End Webserver Schema ---
-
-    obj.property("array", &arr)
-        .property("webserver", &webserverSchema);
+    TrpSchemaObject& rootSchema = factory.object()
+        .property("arr", &factory.array()
+                    .uniq(true)
+                    .item(&factory
+                        .number()
+                        .min(5)
+                        .max(10)
+                    )
+                );
+    
     TrpValidatorContext ctx;
-
-    if (!obj.validate(parser.getAST(), ctx)) {
+    if (!rootSchema.validate(parser.getAST(), ctx)) {
+        std::cerr << "\n--- Validation Errors ---" << std::endl;
         ctx.printErrors();
+        return 1;
     } else {
-        std::cout << "good trip" << std::endl;
+        std::cout << "\ngood trip: Configuration is valid!" << std::endl;
     }
+
+    return 0;
 }  

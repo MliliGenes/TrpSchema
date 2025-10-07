@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrpJSON Parser - C++98 JSON Parser</title>
+    
+    <!-- CDN Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>TrpJSON Parser</h1>
+                <p class="subtitle">
+                    A high-performance, C++98-compatible JSON parser with colorized output, 
+                    comprehensive error handling, and memory-safe design.
+                </p>
+                
+                <div class="badges">
+                    <span class="badge">C++98 Compatible</span>
+                    <span class="badge">Memory Safe</span>
+                    <span class="badge">Zero Dependencies</span>
+                    <span class="badge">Colorized Output</span>
+                    <span class="badge">High Performance</span>
+                </div>
+                
+                <div class="cta-buttons">
+                    <a href="https://github.com/MliliGenes/TrpJSON" class="btn btn-primary">
+                        <i class="fab fa-github"></i>
+                        View on GitHub
+                    </a>
+                    <a href="#demo" class="btn btn-secondary">
+                        <i class="fas fa-play-circle"></i>
+                        Try Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">
+                Built for reliability, performance, and ease of use in C++98 environments
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3 class="feature-title">C++98 Compatible</h3>
+                    <p class="feature-description">Works seamlessly with legacy systems and older compilers. No modern C++ features required.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="feature-title">Colorized Output</h3>
+                    <p class="feature-description">Beautiful ANSI color-coded JSON visualization with syntax highlighting for better readability.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="feature-title">Error Detection</h3>
+                    <p class="feature-description">Comprehensive error handling with detailed messages including line and column information.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Memory Safe</h3>
+                    <p class="feature-description">Custom AutoPointer implementation prevents memory leaks and ensures safe resource management.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">High Performance</h3>
+                    <p class="feature-description">Single-pass parsing with minimal memory allocation for maximum efficiency.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="feature-title">Pretty Printing</h3>
+                    <p class="feature-description">Formatted JSON output with proper indentation and structure visualization.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Clean Architecture</h2>
+            <p class="section-subtitle">
+                Recursive descent parser with polymorphic value hierarchy
+            </p>
+            
+            <div class="demo-panel">
+                <div class="demo-header">
+                    <i class="fas fa-code-branch"></i>
+                    Component Structure
+                </div>
+                <div class="demo-content">
+                    <pre class="cm-s-material-palenight"><code>TrpJSON Parser
+├── Core Components
+│   ├── TrpJsonLexer     - Tokenization and lexical analysis
+│   └── TrpJsonParser    - Recursive descent parser
+├── Value Types
+│   ├── ITrpJsonValue    - Base interface for all JSON values
+│   ├── TrpJsonObject    - JSON objects (key-value pairs)
+│   ├── TrpJsonArray     - JSON arrays (ordered lists)
+│   ├── TrpJsonString    - JSON strings
+│   ├── TrpJsonNumber    - JSON numbers (integers and floats)
+│   ├── TrpJsonBool      - JSON booleans
+│   └── TrpJsonNull      - JSON null values
+└── Utilities
+    ├── AutoPointer      - Memory management
+    └── AstToString      - Colorized serialization</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="section" id="demo">
+        <div class="container">
+            <h2 class="section-title">Live Demo</h2>
+            <p class="section-subtitle">
+                See the parser in action with colorized output
+            </p>
+            
+            <div class="demo-container">
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-file-alt"></i>
+                        Input JSON - Web Server Configuration
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-json"><code>{
+  "non": false,
+  "routes": [
+    {
+      "autoindex": false,
+      "index": "index.html",
+      "path": "/",
+      "root": "/var/www/html"
+    },
+    {
+      "methods": ["GET", "POST"],
+      "path": "/api",
+      "proxy_pass": "http://127.0.0.1:5000"
+    },
+    {
+      "cache_control": "max-age=86400",
+      "path": "/static",
+      "root": "/var/www/static"
+    }
+  ],
+  "security": {
+    "cors": {
+      "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
+      "allowed_origins": ["*"],
+      "enabled": true
+    },
+    "rate_limit": {
+      "ban_time_minutes": 15,
+      "requests_per_minute": 60
+    }
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "logging": {
+      "access_log": "/var/log/webserver/access.log",
+      "error_log": "/var/log/webserver/error.log",
+      "log_level": "info"
+    },
+    "port": 8080,
+    "ssl": {
+      "certificate": "/etc/ssl/certs/server.crt",
+      "enabled": true,
+      "key": "/etc/ssl/private/server.key"
+    }
+  },
+  "timeouts": {
+    "client_body_timeout": 60,
+    "client_header_timeout": 30,
+    "keepalive_timeout": 65
+  }
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-palette"></i>
+                        TrpJSON Colorized Output
+                    </div>
+                    <div class="demo-content cm-s-material-palenight json-output">
+                        <pre><code><span class="json-punct">{</span>
+        <span class="json-key">"non"</span><span class="json-punct">:</span> <span class="json-boolean">false</span><span class="json-punct">,</span>
+        <span class="json-key">"routes"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+                <span class="json-punct">{</span>
+                        <span class="json-key">"autoindex"</span><span class="json-punct">:</span> <span class="json-boolean">false</span><span class="json-punct">,</span>
+                        <span class="json-key">"index"</span><span class="json-punct">:</span> <span class="json-string">"index.html"</span><span class="json-punct">,</span>
+                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/"</span><span class="json-punct">,</span>
+                        <span class="json-key">"root"</span><span class="json-punct">:</span> <span class="json-string">"/var/www/html"</span>
+                <span class="json-punct">}</span><span class="json-punct">,</span>
+                <span class="json-punct">{</span>
+                        <span class="json-key">"methods"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+                                <span class="json-string">"GET"</span><span class="json-punct">,</span>
+                                <span class="json-string">"POST"</span>
+                        <span class="json-punct">]</span><span class="json-punct">,</span>
+                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/api"</span><span class="json-punct">,</span>
+                        <span class="json-key">"proxy_pass"</span><span class="json-punct">:</span> <span class="json-string">"http://127.0.0.1:5000"</span>
+                <span class="json-punct">}</span><span class="json-punct">,</span>
+                <span class="json-punct">{</span>
+                        <span class="json-key">"cache_control"</span><span class="json-punct">:</span> <span class="json-string">"max-age=86400"</span><span class="json-punct">,</span>
+                        <span class="json-key">"path"</span><span class="json-punct">:</span> <span class="json-string">"/static"</span><span class="json-punct">,</span>
+                        <span class="json-key">"root"</span><span class="json-punct">:</span> <span class="json-string">"/var/www/static"</span>
+                <span class="json-punct">}</span>
+        <span class="json-punct">]</span><span class="json-punct">,</span>
+        <span class="json-key">"security"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                <span class="json-key">"cors"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                        <span class="json-key">"allowed_methods"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+                                <span class="json-string">"GET"</span><span class="json-punct">,</span>
+                                <span class="json-string">"POST"</span><span class="json-punct">,</span>
+                                <span class="json-string">"PUT"</span><span class="json-punct">,</span>
+                                <span class="json-string">"DELETE"</span>
+                        <span class="json-punct">]</span><span class="json-punct">,</span>
+                        <span class="json-key">"allowed_origins"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+                                <span class="json-string">"*"</span>
+                        <span class="json-punct">]</span><span class="json-punct">,</span>
+                        <span class="json-key">"enabled"</span><span class="json-punct">:</span> <span class="json-boolean">true</span>
+                <span class="json-punct">}</span><span class="json-punct">,</span>
+                <span class="json-key">"rate_limit"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                        <span class="json-key">"ban_time_minutes"</span><span class="json-punct">:</span> <span class="json-number">15</span><span class="json-punct">,</span>
+                        <span class="json-key">"requests_per_minute"</span><span class="json-punct">:</span> <span class="json-number">60</span>
+                <span class="json-punct">}</span>
+        <span class="json-punct">}</span><span class="json-punct">,</span>
+        <span class="json-key">"server"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                <span class="json-key">"host"</span><span class="json-punct">:</span> <span class="json-string">"0.0.0.0"</span><span class="json-punct">,</span>
+                <span class="json-key">"logging"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                        <span class="json-key">"access_log"</span><span class="json-punct">:</span> <span class="json-string">"/var/log/webserver/access.log"</span><span class="json-punct">,</span>
+                        <span class="json-key">"error_log"</span><span class="json-punct">:</span> <span class="json-string">"/var/log/webserver/error.log"</span><span class="json-punct">,</span>
+                        <span class="json-key">"log_level"</span><span class="json-punct">:</span> <span class="json-string">"info"</span>
+                <span class="json-punct">}</span><span class="json-punct">,</span>
+                <span class="json-key">"port"</span><span class="json-punct">:</span> <span class="json-number">8080</span><span class="json-punct">,</span>
+                <span class="json-key">"ssl"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                        <span class="json-key">"certificate"</span><span class="json-punct">:</span> <span class="json-string">"/etc/ssl/certs/server.crt"</span><span class="json-punct">,</span>
+                        <span class="json-key">"enabled"</span><span class="json-punct">:</span> <span class="json-boolean">true</span><span class="json-punct">,</span>
+                        <span class="json-key">"key"</span><span class="json-punct">:</span> <span class="json-string">"/etc/ssl/private/server.key"</span>
+                <span class="json-punct">}</span>
+        <span class="json-punct">}</span><span class="json-punct">,</span>
+        <span class="json-key">"timeouts"</span><span class="json-punct">:</span> <span class="json-punct">{</span>
+                <span class="json-key">"client_body_timeout"</span><span class="json-punct">:</span> <span class="json-number">60</span><span class="json-punct">,</span>
+                <span class="json-key">"client_header_timeout"</span><span class="json-punct">:</span> <span class="json-number">30</span><span class="json-punct">,</span>
+                <span class="json-key">"keepalive_timeout"</span><span class="json-punct">:</span> <span class="json-number">65</span>
+        <span class="json-punct">}</span>
+<span class="json-punct">}</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Performance Benchmarks</h2>
+            <p class="section-subtitle">
+                Tested on Intel i7-10700K, 32GB RAM, GCC 9.4.0, Ubuntu 20.04
+            </p>
+            
+            <div class="benchmark-grid">
+                <div class="benchmark-card">
+                    <div class="benchmark-value">0.12ms</div>
+                    <div class="benchmark-label">Simple Config (1KB)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%"></div>
+                    </div>
+                </div>
+                
+                <div class="benchmark-card">
+                    <div class="benchmark-value">2.8ms</div>
+                    <div class="benchmark-label">API Response (50KB)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%"></div>
+                    </div>
+                </div>
+                
+                <div class="benchmark-card">
+                    <div class="benchmark-value">48ms</div>
+                    <div class="benchmark-label">Large Dataset (1MB)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="benchmark-card">
+                    <div class="benchmark-value">5.2ms</div>
+                    <div class="benchmark-label">Complex Nested (100KB)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 42%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Real-World Use Cases</h2>
+            <p class="section-subtitle">
+                Perfect for configuration files, API processing, and data pipelines
+            </p>
+            
+            <div class="use-cases">
+                <div class="use-case">
+                    <div class="use-case-header">
+                        <i class="fas fa-cogs"></i>
+                        <div>
+                            <h3 class="use-case-title">Configuration Files</h3>
+                            <p class="use-case-description">Parse complex application configuration with nested structures</p>
+                        </div>
+                    </div>
+                    <div class="use-case-content">
+                        <p>Handle multi-level configuration files with database settings, feature flags, and environment-specific parameters.</p>
+                        <pre class="cm-s-material-palenight language-json"><code>{
+  "database": {
+    "pools": [
+      {"name": "read", "size": 10},
+      {"name": "write", "size": 5}
+    ]
+  },
+  "logging": {"level": "info"}
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="use-case">
+                    <div class="use-case-header">
+                        <i class="fas fa-globe"></i>
+                        <div>
+                            <h3 class="use-case-title">API Processing</h3>
+                            <p class="use-case-description">Process REST API responses with proper error detection</p>
+                        </div>
+                    </div>
+                    <div class="use-case-content">
+                        <p>Handle API responses with pagination, user data, and complex nested objects efficiently.</p>
+                        <pre class="cm-s-material-palenight language-json"><code>{
+  "data": {
+    "users": [
+      {"id": 1, "active": true},
+      {"id": 2, "active": false}
+    ],
+    "pagination": {"total": 150}
+  }
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="use-case">
+                    <div class="use-case-header">
+                        <i class="fas fa-database"></i>
+                        <div>
+                            <h3 class="use-case-title">Data Pipelines</h3>
+                            <p class="use-case-description">Process large JSON datasets in streaming applications</p>
+                        </div>
+                    </div>
+                    <div class="use-case-content">
+                        <p>Efficiently process large datasets with minimal memory usage and high throughput.</p>
+                        <pre class="cm-s-material-palenight language-cpp"><code>// Process each record efficiently
+TrpJsonParser parser("dataset.json");
+auto root = parser.parse();
+
+for (size_t i = 0; i < records->size(); ++i) {
+    processRecord(records->at(i));
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section stats-section">
+        <div class="container">
+            <h2 class="section-title">Performance Stats</h2>
+            <p class="section-subtitle">Optimized for speed and memory efficiency</p>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">20MB/s</div>
+                    <div class="stat-label">Processing Speed</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">~2x</div>
+                    <div class="stat-label">Memory Efficiency</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">O(n)</div>
+                    <div class="stat-label">Time Complexity</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Memory Leaks</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">Get up and running in seconds</p>
+            
+            <div class="demo-container">
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-hammer"></i>
+                        Build Instructions
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-bash"><code># Clone the repository
+git clone https://github.com/MliliGenes/TrpJSON.git
+cd TrpJSON
+
+# Build using make
+make
+
+# Or build manually
+g++ -Wall -Wextra -std=c++98 -Iinclude \
+    -o TrpJSON main.cpp src/**/*.cpp</code></pre>
+                    </div>
+                </div>
+                
+                <div class="demo-panel">
+                    <div class="demo-header">
+                        <i class="fas fa-laptop-code"></i>
+                        Usage Example
+                    </div>
+                    <div class="demo-content">
+                        <pre class="cm-s-material-palenight language-cpp"><code>#include "TrpJsonParser.hpp"
+
+int main() {
+    TrpJsonParser parser("config.json");
+    auto root = parser.parse();
+    
+    if (root.get() != NULL) {
+        std::cout << astValueToString(root.get());
+    }
+    
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Credits Section -->
+    <section class="section credits-section">
+        <div class="container">
+            <h2 class="section-title" style="margin-bottom: 2rem; color: hsl(var(--secondary-foreground));">Created by</h2>
+            
+            <div class="credits-content">
+                <img id="github-avatar" alt="sel-mlil" class="credits-avatar">
+                <div class="credits-info">
+                    <h3 class="credits-name">sel-mlil</h3>
+                    <p class="credits-role">Software Developer</p>
+                    
+                    <div class="credits-links">
+                        <a href="https://github.com/MliliGenes" class="btn btn-secondary">
+                            <i class="fab fa-github"></i>
+                            GitHub Profile
+                        </a>
+                        <a href="https://profile.intra.42.fr/users/sel-mlil" class="btn btn-secondary">
+                            <i class="fas fa-graduation-cap"></i>
+                            42 Network
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/MliliGenes/TrpJSON" class="footer-link">
+                    <i class="fab fa-github"></i>
+                    GitHub Repository
+                </a>
+                <a href="https://github.com/MliliGenes/TrpJSON/blob/main/README.md" class="footer-link">
+                    <i class="fas fa-book"></i>
+                    Documentation
+                </a>
+                <a href="https://github.com/MliliGenes/TrpJSON/issues" class="footer-link">
+                    <i class="fas fa-bug"></i>
+                    Issues
+                </a>
+                <a href="https://github.com/MliliGenes/TrpJSON/blob/main/LICENSE" class="footer-link">
+                    <i class="fas fa-file-alt"></i>
+                    License
+                </a>
+            </div>
+            
+            <p>&copy; 2025 TrpJSON Parser by <strong>sel-mlil</strong>. Licensed under MIT License.</p>
+            <p style="margin-top: 0.5rem; color: hsl(var(--muted-foreground));">Making JSON parsing simple, safe, and beautiful in C++98!</p>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

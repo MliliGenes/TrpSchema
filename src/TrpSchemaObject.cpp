@@ -21,7 +21,7 @@ TrpSchemaObject& TrpSchemaObject::property( std::string key, TrpSchema* schema )
 
     if (it != properties.end()) return *this;
 
-    properties.insert(std::pair(key, schema));
+    properties.insert(std::pair<std::string, TrpSchema*>(key, schema));
     return *this;
 }
 
@@ -35,6 +35,12 @@ TrpSchemaObject& TrpSchemaObject::required( std::string required ) {
     return *this;
 }
 
+static std::string intToString( int nbr ) {
+    std::stringstream oss;
+    oss << nbr;
+
+    return oss.str();
+}
 
 bool TrpSchemaObject::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) const {
     bool got_errors = false;
@@ -57,7 +63,7 @@ bool TrpSchemaObject::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ValidationError err;
 
         err.path = ctx.getCurrentPath();
-        err.msg = "Object must have at least " + std::to_string(min_items) + " properties, but has " + std::to_string(obj->size());
+        err.msg = "Object must have at least " + intToString(min_items) + " properties, but has " + intToString(obj->size());
 
         ctx.pushError(err);
         if ( !got_errors ) got_errors = true;
@@ -67,7 +73,7 @@ bool TrpSchemaObject::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ValidationError err;
 
         err.path = ctx.getCurrentPath();
-        err.msg = "Object must have at most " + std::to_string(max_items) + " properties, but has " + std::to_string(obj->size());
+        err.msg = "Object must have at most " + intToString(max_items) + " properties, but has " + intToString(obj->size());
 
         ctx.pushError(err);
         if ( !got_errors ) got_errors = true;
@@ -92,7 +98,7 @@ bool TrpSchemaObject::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         ctx.pushPath("." + it->first);
         ITrpJsonValue* prop = obj->find(it->first);
         if (prop) {
-            if (!it->second->validate(prop, ctx)) {
+            if (!it->second || !it->second->validate(prop, ctx)) {
                 if ( !got_errors ) got_errors = true;
             }
         }
