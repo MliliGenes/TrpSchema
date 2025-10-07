@@ -63,8 +63,6 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         std::stringstream ss;
         ss << "Array must contain at most " << max_items << " items, but got " << arr->size();
         err.msg = ss.str();
-        err.expected = SCHEMA_ARRAY;
-        err.actual = TRP_ARRAY;
 
         ctx.pushError(err);
         if ( !got_error ) got_error = true;
@@ -77,8 +75,6 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
         std::stringstream ss;
         ss << "Array must contain at least " << min_items << " items, but got " << arr->size();
         err.msg = ss.str();
-        err.expected = SCHEMA_ARRAY;
-        err.actual = TRP_ARRAY;
 
         ctx.pushError(err);
         if ( !got_error ) got_error = true;
@@ -145,8 +141,6 @@ bool TrpSchemaArray::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) co
                 err.path = ctx.getCurrentPath();
                 ctx.popPath();
                 err.msg = "Duplicate item found in array, Items must be unique";
-                err.expected = SCHEMA_ARRAY;
-                err.actual = TRP_ARRAY;
         
                 ctx.pushError(err);
                 if ( !got_error ) got_error = true;

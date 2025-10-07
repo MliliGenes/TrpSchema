@@ -1,1 +1,20 @@
-["zabazabazaba",10,true,null,50.02,true]
+{
+    "lol": [
+        "zabazabazaba",
+        10,
+        true,
+        null,
+        50.02,
+        true
+    ],
+    "webserver": {
+        "host": "localhost",
+        "port": 8080,
+        "enable_https": false,
+        "supported_protocols": [
+            "HTTP/1.1",
+            "HTTP/2"
+        ],
+        "timeout": 30000
+    }
+}

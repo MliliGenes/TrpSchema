@@ -31,7 +31,7 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
     }
 
     TrpJsonString* str = static_cast<TrpJsonString*>(value);
-    
+
     if (has_max && str->getValue().size() > max_len) {
         ValidationError err;
 
@@ -39,8 +39,6 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         error << "String size should be at most " << max_len << " chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
         err.msg = error.str();
-        err.expected = SCHEMA_STRING;
-        err.actual = value->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;
@@ -53,8 +51,6 @@ bool TrpSchemaString::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
         error << "String size should be at least " << max_len << " chars, but got " << str->getValue().size();
         err.path = ctx.getCurrentPath();
         err.msg = error.str();
-        err.expected = SCHEMA_STRING;
-        err.actual = value->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;

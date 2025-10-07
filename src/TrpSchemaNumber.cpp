@@ -45,8 +45,6 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
 
         err.path = ctx.getCurrentPath();
         err.msg = "Number exceeds maximum value of " + intToString(max_value);
-        err.expected = SCHEMA_NUMBER;
-        err.actual = nbr->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;
@@ -57,8 +55,6 @@ bool TrpSchemaNumber::validate(ITrpJsonValue* value, TrpValidatorContext& ctx) c
 
         err.path = ctx.getCurrentPath();
         err.msg = "Number is below minimum value of " + intToString(min_value);
-        err.expected = SCHEMA_NUMBER;
-        err.actual = nbr->getType();
 
         ctx.pushError( err );
         if ( !got_error ) got_error = true;

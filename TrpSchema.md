@@ -1,4 +1,4 @@
-# TrpSchema - High-Performance JSON Schema Validator
+    # TrpSchema - High-Performance JSON Schema Validator
 
 A C++98-compatible JSON schema validation library built on top of TrpJSON parser, providing Zod-like API with enterprise-grade performance.
 
